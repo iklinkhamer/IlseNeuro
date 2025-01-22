@@ -1,0 +1,185 @@
+potentially useful github pages:
+
+We need to convert our Open Ephys Format files to Binary Format:
+1. https://github.com/open-ephys/analysis-tools/blob/master/Python3/OpenEphys.py
+2. https://github.com/open-ephys/analysis-tools/blob/master/OpenEphys.py#L452
+
+Dropbox: https://www.dropbox.com/home/Lucas%20Bayones/TraceExperiments/ComplexSpikeToolkit/Ilse
+
+How to fix xcb:
+pip install opencv-python-headless
+
+Trash - Alle openstaande links die ik niet kwijt wilde raken dus voor het afsluiten van het venster heb ik ze hier gezet:
+https://github.com/AlexImmer/Laplace
+https://github.com/m-beau/NeuroPyxels/blob/cell_types_classifier/npyx/c4/predict_cell_types.py
+https://github.com/teristam/openephys-fileIO
+https://www.jetbrains.com/help/pycharm/conda-support-creating-conda-virtual-environment.html#create-a-conda-environment
+https://github.com/m-beau/NeuroPyxels/blob/8ee93002621551b189d9ac627975cff3be255b7f/npyx/c4/predict_cell_types.py#L731
+https://github.com/m-beau/NeuroPyxels/tree/8ee93002621551b189d9ac627975cff3be255b7f
+https://duckduckgo.com/?q=converting+openephys+to+oebin&t=brave&ia=web
+https://open-ephys.github.io/gui-docs/User-Manual/Recording-data/Open-Ephys-format.html
+https://github.com/m-beau/NeuroPyxels/tree/cell_types_classifier
+https://github.com/m-beau/NeuroPyxels/blob/8ee93002621551b189d9ac627975cff3be255b7f/npyx/c4/run_deep_classifier.py#L23
+https://github.com/m-beau/NeuroPyxels/blob/master/npyx/c4/dataset_init.py#L259
+https://github.com/AUTOMATIC1111/stable-diffusion-webui/discussions/10480
+https://github.com/AlexImmer/Laplace/blob/main/README.md
+https://stackoverflow.com/questions/41994485/how-to-fix-could-not-find-or-load-the-qt-platform-plugin-windows-while-using-m
+https://github.com/m-beau/NeuroPyxels/blob/cell_types_classifier/requirements_dev.txt
+https://doc.qt.io/qt-6/linux.html
+https://installati.one/install-update-notifier-common-ubuntu-22-04/
+https://pytutorial.com/how-to-solve-modulenotfounderror-no-module-named-in-python/
+https://sfkaplan.people.amherst.edu/research/laplace/documentation/getting-started.html
+http://bayesiandeeplearning.org/2017/papers/44.pdf
+https://aleximmer.github.io/Laplace/#laplace-on-llms
+https://github.com/open-ephys/analysis-tools/blob/master/Python3/OpenEphys.py
+https://github.com/open-ephys/analysis-tools/blob/master/OpenEphys.py#L452
+https://groups.google.com/g/open-ephys/c/OAvY0Ln0YA4?pli=1
+https://doc.qt.io/qt-5/linux.html
+https://help.dropbox.com/delete-restore/cache-folder
+https://stackoverflow.com/questions/29077826/open-spyder-in-ubuntu
+https://stackoverflow.com/questions/40372537/cannot-mix-incompatible-qt-library-version-0x50501-with-this-library-version
+https://github.com/AlexImmer/Laplace
+https://github.com/open-ephys-plugins/open-ephys-data-format
+https://open-ephys.github.io/gui-docs/User-Manual/Recording-data/Binary-format.html
+https://github.com/open-ephys/plugin-GUI/blob/main/Source/Processors/Settings/InfoObject.cpp#L35
+https://github.com/open-ephys/plugin-GUI/blob/main/Source/Processors/RecordNode/BinaryFormat/BinaryRecording.cpp
+https://open-ephys.atlassian.net/wiki/spaces/OEW/pages/166789121/Flat+binary+format
+https://help.dropbox.com/
+https://www.dropbox.com/home/Lucas%20Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder
+https://github.com/no1specific/NeuroPyxels
+https://github.com/m-beau/NeuroPyxels#%EF%B8%8F-installation
+https://open-ephys.atlassian.net/wiki/spaces/OEW/pages/166789121/Flat+binary+format
+https://duckduckgo.com/?q=open+ephys+oebin+file&t=brave&ia=web
+https://open-ephys.github.io/gui-docs/User-Manual/Recording-data/Binary-format.html
+https://realpython.com/python3-object-oriented-programming/
+https://docs.python.org/3/reference/datamodel.html
+https://docs.python.org/3/tutorial/classes.html
+https://duckduckgo.com/?q=OOP+in+python&t=brave&ia=web
+https://en.wikipedia.org/wiki/Object-oriented_programming
+https://duckduckgo.com/?q=OOP+wikipedia&t=brave&ia=web
+https://pdm-project.org/latest/usage/dependency/
+
+
+
+
+
+ % linkaxes(psthAxes, 'y')
+        syncY(psthAxes(:));
+
+        % pause;
+        if ~kwargs.selectBatchMode
+            saveFig = str2double(input('Want this one?','s'));
+        else
+            saveFig = 0;
+        end
+        if kwargs.batchMode || (kwargs.selectBatchMode && ismember(neuron.id, kwargs.selectArray)) || saveFig
+            if not(isfield(kwargs, "subfolder"))
+                switch class(neuron.session)
+                    case 'Session'
+                        subfolder = neuron.session.tracePriorName();
+                    case 'StitchedSessions'
+                        subfolder = "";
+                    otherwise
+                        warning("Unkown session class %s", class(neuron.session))
+                        keyboard
+                end
+            else
+                subfolder = kwargs.subfolder;
+            end
+
+
+
+% Define the mouse name
+mouse_name = "Quimper";
+
+% Define the directory path
+directory = fullfile('/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder', mouse_name);
+
+% Get a list of all folders in the directory
+all_folders = dir(directory);
+
+% Filter folders with the mouse_name in their name and exclude "copy"
+mouse_folders = {};
+for i = 1:length(all_folders)
+    if all_folders(i).isdir && contains(all_folders(i).name, mouse_name) && ~contains(all_folders(i).name, "copy")
+        mouse_folders{end+1} = all_folders(i).name; %#ok<AGROW>
+    end
+end
+
+% Process each folder
+for i = 1:length(mouse_folders)
+    folder = mouse_folders{i};
+    folder_path = fullfile(directory, folder, 'c4', 'cell_type_classification');
+    
+    % Initialize an empty array to store numbers
+    numbers = [];
+    
+    % Get a list of all files in the target folder
+    files = dir(folder_path);
+    
+    for j = 1:length(files)
+        filename = files(j).name;
+        
+        % Check if the filename starts with "unit"
+        if startsWith(filename, "unit")
+            % Extract numbers from the filename using a regular expression
+            number = regexp(filename, '\d+', 'match');
+            if ~isempty(number)
+                numbers = [numbers, str2double(number{1})]; %#ok<AGROW>
+            end
+        end
+    end
+    
+    % Sort the numbers
+    numbers = sort(numbers);
+    
+    % Save the array in a .mat file
+    output_file = fullfile(folder_path, 'neurons_filtered_c4.mat');
+    save(output_file, 'numbers');
+    
+    % Print results
+    fprintf('Numbers extracted: %s\n', mat2str(numbers));
+    fprintf('Array saved in MATLAB format as ''%s''\n', output_file);
+end
+
+
+
+new error: 
+
+Preparing waveforms and ACGs for classification:  99%|█████████▉| 96/97 [03:45<00:00,  1.01it/s]WARNING edit dat_path in params.py so that it matches relative location of high pass filtered binary file: ./continuous//Data_AP_LFP/continuous.dat
+WARNING edit dat_path in params.py so that it matches relative location of high pass filtered binary file: ./continuous//Data_AP_LFP/continuous.dat
+WARNING edit dat_path in params.py so that it matches relative location of high pass filtered binary file: ./continuous//Data_AP_LFP/continuous.dat
+WARNING edit dat_path in params.py so that it matches relative location of high pass filtered binary file: ./continuous//Data_AP_LFP/continuous.dat
+WARNING edit dat_path in params.py so that it matches relative location of high pass filtered binary file: ./continuous//Data_AP_LFP/continuous.dat
+WARNING edit dat_path in params.py so that it matches relative location of high pass filtered binary file: ./continuous//Data_AP_LFP/continuous.dat
+WARNING edit dat_path in params.py so that it matches relative location of high pass filtered binary file: ./continuous//Data_AP_LFP/continuous.dat
+WARNING edit dat_path in params.py so that it matches relative location of high pass filtered binary file: ./continuous//Data_AP_LFP/continuous.dat
+WARNING edit dat_path in params.py so that it matches relative location of high pass filtered binary file: ./continuous//Data_AP_LFP/continuous.dat
+WARNING edit dat_path in params.py so that it matches relative location of high pass filtered binary file: ./continuous//Data_AP_LFP/continuous.dat
+WARNING edit dat_path in params.py so that it matches relative location of high pass filtered binary file: ./continuous//Data_AP_LFP/continuous.dat
+Loading models:   0%|          | 0/2020 [00:00<?, ?it/s]Units 1, 2, 3, 4, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 19, 23, 24, 25, 27, 28, 29, 30, 31, 34, 35, 36, 37, 40, 41, 44, 45, 46, 50, 51, 52, 54, 55, 58, 59, 63, 64, 65, 70, 71, 73, 75, 76, 78, 79, 80, 81, 83, 85, 87, 88, 92, 93, 96, 98 were skipped because they had too few good spikes.
+Total number of units: 97
+Number of bad units: 59
+Number of good units: 38
+Loading models: 100%|██████████| 2020/2020 [00:23<00:00, 87.35it/s] 
+Predicting with ensemble: 100%|██████████| 2020/2020 [01:45<00:00, 19.17it/s]
+Plotting classification results:  21%|██        | 8/38 [00:10<00:40,  1.34s/it]
+Traceback (most recent call last):
+  File "/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ComplexSpikeToolkit/Ilse/Ilse PhD/npyx/c4/run_run_cell_types_classifier.py", line 44, in <module>
+    run_cell_types_classifier(dp, quality = 'all', parallel = False)
+  File "/home/no1/anaconda3/envs/new_env/lib/python3.10/site-packages/npyx/c4/misc.py", line 54, in wrapper
+    return func(*args, **kwargs)
+  File "/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ComplexSpikeToolkit/Ilse/Ilse PhD/npyx/c4/predict_cell_types_IK.py", line 718, in run_cell_types_classifier
+    aux_plot_features(i, unit, correspondence)
+  File "/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ComplexSpikeToolkit/Ilse/Ilse PhD/npyx/c4/predict_cell_types_IK.py", line 684, in aux_plot_features
+    plot_features_1cell_vertical(
+  File "/home/no1/anaconda3/envs/new_env/lib/python3.10/site-packages/npyx/c4/plots_functions.py", line 735, in plot_features_1cell_vertical
+    npyx_plot.imshow_cbar(
+  File "/home/no1/anaconda3/envs/new_env/lib/python3.10/site-packages/npyx/plot.py", line 2737, in imshow_cbar
+    fig = add_colorbar(fig, ax, axim, vmin, vmax,
+  File "/home/no1/anaconda3/envs/new_env/lib/python3.10/site-packages/npyx/plot_utils.py", line 859, in add_colorbar
+    assert vmin < vmax, "Make sure that vmin < vmax (cannot make a 0-range colorbar...)."
+AssertionError: Make sure that vmin < vmax (cannot make a 0-range colorbar...).
+
+Process finished with exit code 1
+
