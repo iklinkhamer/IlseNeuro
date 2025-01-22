@@ -5,8 +5,8 @@
 - Add user name and mail:
 
 ```
-git config user.email 125893237+iklinkhamer@users.noreply.github.com
-git config user.name ilse
+git --global config user.email 125893237+iklinkhamer@users.noreply.github.com
+git --global config user.name ilse
 ```
 
 - Create ssh key: `ssh-keygen`
@@ -17,3 +17,8 @@ git config user.name ilse
 	- configure remote to upload to: `git remote add <git@github.com:XXXX>`
 	- make first push: `git push -u origin master/Main`
 
+- change git's editor to be not vim:
+
+```
+git config --global core.editor "xdg-open"
+```
