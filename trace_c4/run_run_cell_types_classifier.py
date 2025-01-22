@@ -1,13 +1,14 @@
 #from npyx.testing import test_npyx
-import sys
-sys.path.insert(0, '/home/no1/anaconda3/envs/new_env/lib/python3.10/site-packages')  # Ensure this is the correct path to 'new_env'
-sys.path.insert(0, '/home/no1/anaconda3/envs/new_env/lib/python3.10/site-packages/npyx')  # Add npyx explicitly if needed
+#import sys
+#sys.path.insert(0, '/home/no1/anaconda3/envs/new_env/lib/python3.10/site-packages')  # Ensure this is the correct path to 'new_env'
+#sys.path.insert(0, '/home/no1/anaconda3/envs/new_env/lib/python3.10/site-packages/npyx')  # Add npyx explicitly if needed
 
 from matplotlib import font_manager
+import npyx
 font_path = '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf' # Path to the Arial font file (adjust the path based on your system)
 font_manager.fontManager.addfont(font_path) # Add the font to Matplotlib's font manager
 
-from predict_cell_types_IK import run_cell_types_classifier
+from npyx.c4.predict_cell_types import run_cell_types_classifier
 from os import path
 import os
 
