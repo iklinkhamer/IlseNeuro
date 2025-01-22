@@ -1,0 +1,15 @@
+[project]
+name = "trace_c4"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "ilse", email = "125893237+iklinkhamer@users.noreply.github.com"},
+]
+dependencies = ["npyx @ git+https://github.com/m-beau/NeuroPyxels@cell_types_classifier"]
+requires-python = "==3.10.*"
+readme = "README.md"
+license = {text = "MIT"}
+
+
+[tool.pdm]
+distribution = false
