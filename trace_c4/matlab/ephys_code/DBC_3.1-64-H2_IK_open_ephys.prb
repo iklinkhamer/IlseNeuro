@@ -1,0 +1,35 @@
+% Number and order of the probe sites in the recording file
+nSites = 32;
+channels = [31	27	23	19	15	11	7	3	1	5	9	13	17	21	25	29	32	28	24	20	16	12	8	4	2	6	10	14	18	22	26	30];
+
+% Recording contact pad size in micrometers (height X width)
+pad = [11.0 15.0];
+
+% Geometry parameters in micrometers
+gap_ch = 20.0;
+gap_col = 0.0;
+sft_col = 0.0;
+gap_shk = 250.0;
+sft_shk = 0.0;
+
+% Site location in micrometers (x and y)
+geometry = zeros(nSites,2);
+geometry(1:2:end,1) = 0;
+geometry(2:2:end,1) = gap_shk;
+geometry(1:2:end,2) = gap_ch * (0:(nSites / 2 - 1));
+geometry(2:2:end,2) = sft_shk + geometry(1:2:end,2);
+
+% Shank group definition
+shank = ones(1,nSites);
+shank(geometry(:,1) >= gap_shk) = 2;
+
+
+
+%channels = [31 1 32 2 29 3 30 4 28 6 27 5 26 8 25 7 24 10 23 9 22 12 21 11 19 13 17 15 20 14 18 16];
+% open_ephys_mapping = IkUtils.getParams().openEphysMapping;
+%     open_ephys_mapping(open_ephys_mapping > 16) = open_ephys_mapping(open_ephys_mapping > 16) - 32;
+%     for i = 1:32
+%     channels_new(i) = find(channels == open_ephys_mapping(i))
+%     end
+% 
+% channels = [31	27	23	19	15	11	7	3	1	5	9	13	17	21	25	29	32	28	24	20	16	12	8	4	2	6	10	14	18	22	26	30];

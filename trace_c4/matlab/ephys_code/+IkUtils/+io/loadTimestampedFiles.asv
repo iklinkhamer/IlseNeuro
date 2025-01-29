@@ -1,0 +1,39 @@
+function [masks, dates] = loadTimestampedFiles(prefixPattern, mname, kwargs)
+arguments
+    prefixPattern = "";
+    mname = "";
+    kwargs.onlyLatest = true;
+    kwargs.folder = IkUtils.getParams().dirHomeData;
+    kwargs.uniformData = false;
+end
+dir_contents = dir(kwargs.folder);
+path_list = IkUtils.getPathFromDir(dir_contents);
+if any(contains(path_list, mname))
+    
+for f = path_list
+    filename = fullfile(f, mname, sprintf("%s*",prefixPattern));
+    dir_files = dir(filename);
+    if ~isempty(dir_files)
+        dir_contents_file = dir_files;
+        break
+    end
+end
+    if ~isempty(dir_contents_file)
+        if kwargs.onlyLatest        
+            masks = {load(fullfile(kwargs.folder, mname, dir_contents_file(end).name))};
+            dates = erase(dir_contents_file(end).name, prefixPattern);
+        else      
+            tic
+            for i = 1:length(dir_contents_file)
+            masks(i) = load(fullfile(kwargs.folder, mname, dir_contents_file(i).name));
+            dates = erase(dir_contents_file(i).name, prefixPattern);
+            if toc > 3
+                continue
+            end
+            end
+        end
+    else
+        masks = [];
+        dates = [];
+    end
+end

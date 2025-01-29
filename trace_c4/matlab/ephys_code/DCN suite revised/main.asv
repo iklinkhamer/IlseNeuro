@@ -1,0 +1,35 @@
+%% JK & IK 2-11-23
+function main()
+arguments
+end
+addpath("/home/mick/Desktop/Ilse/ephys_code/");
+addpath("/home/mick/Desktop/Ilse/ephys_code/Complex spike suite revised/");
+addpath('/media/mick/DATA/Ilse/convertedData/')
+
+choiceMap = ...
+    { "make raster plots"       , @makeRasterPlotsLoopless ...
+    ; "curate simple spikes"    , @simpleCurationMouseWrapper...
+    ; "eyelid data"             , 
+    ; "convert raw ephys data"      , @convertData...
+    ; "make unit from irc output"   , @unitConstruction...
+    ; "change path in prm file"     , @setCorrectProbePath...
+    ; "spike sorting"               , @initSpikeSorting...
+    ; "debug"                       , @keyboard ...
+    ; "quit"                        , @() disp("Exiting ...") ...
+    };
+
+choices = [choiceMap{:,1}];
+
+choice = "";
+
+while ~strcmp(choice, "quit")
+    fprintf("\n-----------------------")
+    fprintf("\nWhat do you want to do?")
+    fprintf("\n-----------------------\n")
+
+    [choice, choice_idx] = IkUtils.do_prompt_select_option(choices);
+
+    choiceMap{choice_idx,2}()
+
+end
+end

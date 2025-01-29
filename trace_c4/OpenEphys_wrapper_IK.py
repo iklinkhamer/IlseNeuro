@@ -3,7 +3,7 @@
 """
 Created on Wed Nov 20 15:14:00 2024
 
-@author: no1
+@author: Ilse Klinkhamer
 """
 
 import OpenEphys
