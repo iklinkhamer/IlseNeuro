@@ -1,0 +1,19 @@
+function [indices, names] = findFirstPriorCSpkSessionAllMice()
+    
+    mice = IkUtils.filter ...
+        ( @(m) any(strcmpi(m.type, ["uniform", "deun"])) ...
+        , defaultMice() ...
+        );
+    
+    names = [mice.name];
+    indices = arrayfun ...
+        ( @findFirstPriorCSpkSession ...
+        , names ...
+        );
+    
+    ax = IkUtils.initPlots();
+    histogram(ax, indices)
+    title("Indices of first uniform session with prior complex spikes")
+%     keyboard
+    
+end

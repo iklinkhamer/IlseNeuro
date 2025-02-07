@@ -1,0 +1,9 @@
+function type = getMouseType(mname)
+    
+    mouseList = defaultMice();
+    
+    mIdx = find(strcmp([mouseList.name], mname), 1);
+    
+    type = mouseList(mIdx).type;
+    
+end

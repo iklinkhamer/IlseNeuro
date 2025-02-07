@@ -1,0 +1,9 @@
+vcFilter = 'bandpass'; % Use bandpass filter instead of differentiator filter
+freqLim = [300 6000]; % Bandpass frequency range
+nTime_clu = 1;			% number of time periods to perform separate clustering (later to be merged after clustering)
+fPlot_gt = 0;           % Plot groundtruth 
+fGpu = 1;
+fRemove_duplicate = 0;
+knn = 30;
+nTime_clu = 1;
+nTime_drift = 64;

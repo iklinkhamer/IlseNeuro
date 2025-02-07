@@ -1,0 +1,23 @@
+% #Detection
+qqFactor = {4};
+spkRefrac_ms = {1/4};
+spkLim_ms = {[-.25, .75]};
+freqLim = {[300,8000]};
+
+% #Auto-merging
+maxWavCor = {.99};
+fGpu={1};
+fParfor={0};
+
+% #Drift
+batch_sec_drift = {300};
+step_sec_drift = {20};
+
+% #Noise
+fft_thresh = {8};
+delta_cut = {1};
+
+% #Sort mode
+nPcPerChan = {0};
+nPc_spk = {9};
+vcCommonRef = {'mean', 'none', 'trimmean'};

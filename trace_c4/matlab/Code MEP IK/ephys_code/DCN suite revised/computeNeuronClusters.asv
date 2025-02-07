@@ -1,0 +1,114 @@
+%% I.K. 1-6-24
+function mask = computeNeuronClusters(sessionsData)
+
+neuron_rates = getNeuronRateValues(sessionsData);
+
+nCumulativeNeuronsPrevSessions = [0 getCumulativeNeuronsPerSession(sessionsData)];
+
+nSessions = length(sessionsData);
+
+neuron_base_rates = [];
+neuron_max_rates = [];
+
+for s = 1 : nSessions
+    neuron_base_rates = [neuron_base_rates, neuron_rates(s).base_rates];
+    neuron_max_rates = [neuron_max_rates, neuron_rates(s).max_rates];
+end
+
+for i = 1 : length(neuron_base_rates)
+    fprintf("neuron: %d base rate: %2f\n", i, neuron_base_rates(i))
+end
+
+cluster = ones(length(neuron_base_rates), 1);
+cluster_values = rand(1,1);
+
+simple_cluster = find(cluster_values == min(cluster_values)); 
+simple_cluster_mask = cluster == simple_cluster;
+
+SS_base_filter_mask = neuron_base_rates >= IkUtils.getParams().Sspk_base_filter;
+
+simple_mask_all_sessions = simple_cluster_mask(:) ...
+                         & SS_base_filter_mask(:) ...
+                         ;
+mask = struct;
+
+for s = 1 : nSessions
+    
+    firstNeuron = nCumulativeNeuronsPrevSessions(s)+1;
+    lastNeuron = nCumulativeNeuronsPrevSessions(s+1);
+    
+    mask(s).complexMask = zeros(size(simple_mask_all_sessions, 1), size(simple_mask_all_sessions, 2)); 
+    mask(s).simpleMask = simple_mask_all_sessions(firstNeuron:lastNeuron);
+    
+end
+ 
+end
+
+
+function neuron_rates = getNeuronRateValues(sessionsData)
+
+nNeuronsPerSession = getNeuronsPerSession(sessionsData);
+
+%neuron_base_rates = zeros(nNeurons,1);
+%neuron_max_rates = zeros(nNeurons,1);
+
+neuron_rates = struct;
+
+nSessions = length(sessionsData);
+
+
+for s = 1:nSessions
+    
+    % TODO: Julius: splice out the `index` from the `getConditions` function
+    if ~isempty(sessionsData(s).neuron)
+        [nConditions, index, ~, ~] = getConditions(sessionsData(s));
+    end
+    
+    for n = 1 : nNeuronsPerSession(s)
+        
+        %n_base_rate = mean(mean(data(s).neuron(n).psth_cs_reset( : , index.base_idx_cs)));
+        %neuron_base_rates((nNeurons_prev_sessions(s) + n),1) = n_base_rate;
+        neuron_rates(s).base_rates(n) = ...
+            nanmean ...
+                ( nanmean ...
+                    ( sessionsData(s).neuron(n).psth_cs_reset_filtered(:, index.base_idx_cs) ... % IK change 3-4-24
+                    ) ...
+                );
+        
+        %n_max_rate = median(max(data(s).neuron(n).psth_cs_reset(2 : nConditions,index.maxmaxrange_cs),[],2)) ;
+        %neuron_max_rates((nNeurons_prev_sessions(s) + n) ,1) = n_max_rate;
+        neuron_rates(s).max_rates(n) = ...
+            nanmedian ...
+                ( nanmax ...
+                    ( sessionsData(s).neuron(n).psth_cs_reset_filtered(2:nConditions, index.maxmaxrange_cs) ...
+                    , [] ...
+                    , 2 ...
+                    ) ...
+                );
+    end
+    
+    
+end
+
+end
+
+function nCumPerSess = getCumulativeNeuronsPerSession(sessionsData)
+    
+    nCumPerSess = cumsum(getNeuronsPerSession(sessionsData));
+    
+end
+
+function nNeuronsPerSession = getNeuronsPerSession(sessionsData)
+
+for i = 1:length(sessionsData) % IK change
+   nNeuronsPerSession(i) = length(sessionsData(i).neuron);
+end
+    
+    
+    
+%     nNeuronsPerSession = arrayfun ...
+%         ( @(session) size(session.neuron, 1) ...
+%         , sessionsData ...
+%         );
+
+end
