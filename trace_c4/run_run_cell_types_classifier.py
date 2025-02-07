@@ -12,7 +12,7 @@ from npyx.c4.predict_cell_types import run_cell_types_classifier
 from os import path
 import os
 
-mouse_name = "Yosemite"
+mouse_name = "Seattle"
 classify_again = True
 
 # any spike sorted recording compatible with phy
@@ -48,3 +48,5 @@ for sess_oebin in mouse_folders:
 
     # if any test fails, re-run them with the following to print the error log, and try to fix it or post an issue on github:
     #run_cell_types_classifier(dp, raise_error=True)
+
+

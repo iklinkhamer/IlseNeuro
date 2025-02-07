@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:3aa9a4a46ced71417d82136d76aaa97082dae669ddb27ce4cfa0d737d023a2fa"
+content_hash = "sha256:0ccfd678f8e3bd123480844ca49c7ade9067c268f043f64e0bcb34f5a754bdee"
 
 [[metadata.targets]]
 requires_python = "==3.10.*"
@@ -245,6 +245,36 @@ files = [
 ]
 
 [[package]]
+name = "cupy"
+version = "13.3.0"
+requires_python = ">=3.9"
+summary = ""
+groups = ["default"]
+dependencies = [
+    "fastrlock>=0.5",
+    "numpy<2.3,>=1.22",
+]
+files = [
+    {file = "cupy-13.3.0.tar.gz", hash = "sha256:9a2a17af2b99cce91dd1366939c3805e3f51f9de5046df64f29ccbad3bdf78ed"},
+]
+
+[[package]]
+name = "cupy-cuda11x"
+version = "13.3.0"
+requires_python = ">=3.9"
+summary = "CuPy: NumPy & SciPy for GPU"
+groups = ["default"]
+dependencies = [
+    "fastrlock>=0.5",
+    "numpy<2.3,>=1.22",
+]
+files = [
+    {file = "cupy_cuda11x-13.3.0-cp310-cp310-manylinux2014_aarch64.whl", hash = "sha256:ef854f0c63525d8163ab7af19f503d964de9dde0dd1cf9ea806a6ecb302cdce3"},
+    {file = "cupy_cuda11x-13.3.0-cp310-cp310-manylinux2014_x86_64.whl", hash = "sha256:54bf12a6663d0471e3e37e62972add348c5263ce803688f48bbfab1b20ebdb02"},
+    {file = "cupy_cuda11x-13.3.0-cp310-cp310-win_amd64.whl", hash = "sha256:972d133efa2af80bb8ef321858ffe7cabc3abf8f58bcc4f13541dd497c05077d"},
+]
+
+[[package]]
 name = "curvlinops-for-pytorch"
 version = "2.0.1"
 requires_python = ">=3.9"
@@ -388,6 +418,23 @@ files = [
 ]
 
 [[package]]
+name = "fastrlock"
+version = "0.8.3"
+summary = "Fast, re-entrant optimistic lock implemented in Cython"
+groups = ["default"]
+files = [
+    {file = "fastrlock-0.8.3-cp310-cp310-macosx_11_0_universal2.whl", hash = "sha256:cc5fa9166e05409f64a804d5b6d01af670979cdb12cd2594f555cb33cdc155bd"},
+    {file = "fastrlock-0.8.3-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_24_aarch64.whl", hash = "sha256:7a77ebb0a24535ef4f167da2c5ee35d9be1e96ae192137e9dc3ff75b8dfc08a5"},
+    {file = "fastrlock-0.8.3-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_24_i686.whl", hash = "sha256:d51f7fb0db8dab341b7f03a39a3031678cf4a98b18533b176c533c122bfce47d"},
+    {file = "fastrlock-0.8.3-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:767ec79b7f6ed9b9a00eb9ff62f2a51f56fdb221c5092ab2dadec34a9ccbfc6e"},
+    {file = "fastrlock-0.8.3-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:0d6a77b3f396f7d41094ef09606f65ae57feeb713f4285e8e417f4021617ca62"},
+    {file = "fastrlock-0.8.3-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:92577ff82ef4a94c5667d6d2841f017820932bc59f31ffd83e4a2c56c1738f90"},
+    {file = "fastrlock-0.8.3-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:3df8514086e16bb7c66169156a8066dc152f3be892c7817e85bf09a27fa2ada2"},
+    {file = "fastrlock-0.8.3-cp310-cp310-win_amd64.whl", hash = "sha256:001fd86bcac78c79658bac496e8a17472d64d558cd2227fdc768aa77f877fe40"},
+    {file = "fastrlock-0.8.3.tar.gz", hash = "sha256:4af6734d92eaa3ab4373e6c9a1dd0d5ad1304e172b1521733c6c3b3d73c8fa5d"},
+]
+
+[[package]]
 name = "filelock"
 version = "3.17.0"
 requires_python = ">=3.9"
@@ -502,7 +549,7 @@ files = [
 
 [[package]]
 name = "ipython"
-version = "8.31.0"
+version = "8.32.0"
 requires_python = ">=3.10"
 summary = "IPython: Productive Interactive Computing"
 groups = ["default", "dev"]
@@ -520,8 +567,8 @@ dependencies = [
     "typing-extensions>=4.6; python_version < \"3.12\"",
 ]
 files = [
-    {file = "ipython-8.31.0-py3-none-any.whl", hash = "sha256:46ec58f8d3d076a61d128fe517a51eb730e3aaf0c184ea8c17d16e366660c6a6"},
-    {file = "ipython-8.31.0.tar.gz", hash = "sha256:b6a2274606bec6166405ff05e54932ed6e5cfecaca1fc05f2cacde7bb074d70b"},
+    {file = "ipython-8.32.0-py3-none-any.whl", hash = "sha256:cae85b0c61eff1fc48b0a8002de5958b6528fa9c8defb1894da63f42613708aa"},
+    {file = "ipython-8.32.0.tar.gz", hash = "sha256:be2c91895b0b9ea7ba49d33b23e2040c352b33eb6a519cca7ce6e0c743444251"},
 ]
 
 [[package]]
@@ -799,9 +846,9 @@ files = [
 name = "npyx"
 version = "4.1.1"
 requires_python = "<3.12"
-git = "https://github.com/m-beau/NeuroPyxels"
+git = "ssh://git@github.com/iklinkhamer/NeuroPyxels.git"
 ref = "cell_types_classifier"
-revision = "bcbae4ce26a91e1bb1f006954d763790eca65f72"
+revision = "16de23b323b1e8680a0ac73dfef1672a65bfe5ac"
 summary = "Python routines dealing with Neuropixels data."
 groups = ["default"]
 dependencies = [
@@ -1517,7 +1564,7 @@ files = [
 
 [[package]]
 name = "spyder-kernels"
-version = "3.0.2"
+version = "3.0.3"
 requires_python = ">=3.8"
 summary = "Jupyter kernels for Spyder's console"
 groups = ["dev"]
@@ -1532,8 +1579,8 @@ dependencies = [
     "wurlitzer>=1.0.3; platform_system != \"Windows\"",
 ]
 files = [
-    {file = "spyder_kernels-3.0.2-py3-none-any.whl", hash = "sha256:6709a3c77b57005bfdfc03d2fc58170ad88b5906fc24264653127c7b008d3124"},
-    {file = "spyder_kernels-3.0.2.tar.gz", hash = "sha256:a5300a0cc18d9201c006827c170b0ec08cfc943f775f083abfb6bdf672feb561"},
+    {file = "spyder_kernels-3.0.3-py3-none-any.whl", hash = "sha256:e319018c9537e82e1d9ac6daddf2620d4d05a394270994b0126a327903fe1e5e"},
+    {file = "spyder_kernels-3.0.3.tar.gz", hash = "sha256:63cf9da6ea533679a5a791211e958cb4a7ebb803f84086fbdc248c08a7914669"},
 ]
 
 [[package]]

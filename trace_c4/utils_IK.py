@@ -44,3 +44,25 @@ def moving_average(data, window_size):
     """Compute the moving average of a 1D array."""
     return np.convolve(data, np.ones(window_size)/window_size, mode='valid')
 
+def load_data(data_file_path):
+    """
+    Load spike times from a file.
+
+    Parameters:
+    - data_file_path (str): Path to the file containing spike times.
+
+    Returns:
+    - data (np.array): Array of spike times.
+    """
+    _, file_extension = os.path.splitext(data_file_path)
+
+    if file_extension == ".txt":
+        data = np.loadtxt(data_file_path)
+    elif file_extension == ".csv":
+        data = np.genfromtxt(data_file_path, delimiter=",")
+    elif file_extension == ".npy":
+        data = np.load(data_file_path)
+    else:
+        raise ValueError("Unsupported file format. Please use .txt, .csv, or .npy files.")
+        
+    return data
