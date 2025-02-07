@@ -15,21 +15,21 @@
 
 function confusionMatrix(mouseName, kwargs)
 arguments
-    mouseName = "Quimper"
+    mouseName string = "Yosemite"
     kwargs.neuronFilterFn = @(neuron) true;
-    kwargs.outputFolder = "~/Documents/c4_neurons_temp_output/confusionMatrix";
+    kwargs.outputFolder string = "~/Documents/c4_neurons_temp_output/confusionMatrix";
     kwargs.subfolder54esdr56t2
     kwargs.fileTypes (1,:) string = ["png", "epsc"]; % "fig",
     kwargs.trialGroupingForPsth
-    kwargs.printSize = [602 291]; % rectangular %[334 291] % square-ish aspect ratio for single psth plot
+    kwargs.printSize (1,2) double = [602 291]; % rectangular %[334 291] % square-ish aspect ratio for single psth plot
     kwargs.batchMode (1,1) logical = false % if true, save all units for which neuronFilterFn returns true
     kwargs.lineWidth (1,1) {isreal} = 0.5;
     kwargs.selectBatchMode (1,1) logical = false % if true, save a selection of neurons provided in an array
-    kwargs.selectArray = [];
-    kwargs.c4_folder = "c4";
-    kwargs.c4_res_folder = "cell_type_classification";
+    kwargs.selectArray double = [];
+    kwargs.c4_folder string = "c4";
+    kwargs.c4_res_folder string = "cell_type_classification";
     kwargs.labels = [1, 2, 3, 4, 5, 6; "GoC", "MLI", "MFB", "PkC_ss", "PkC_cs", "unlabeled"];
-    kwargs.saveMismatchFigs = true;
+    kwargs.saveMismatchFigs logical = false;
 end
 close all
 
@@ -54,8 +54,8 @@ for s = 1:length(sessions)
     end
 
     baserates = neurons.baseRate();
-    baselineFreqRanges = [0 3; 8 50; 50 inf; 3 8]; % Each row defines a range
-    correspondingNeuronTypes = [5 2 4 6; "PkC_cs", "MLI", "PkC_ss", "unlabeled"];
+    baselineFreqRanges = [0 3; 3 8; 8 50; 50 inf]; % Each row defines a range
+    correspondingNeuronTypes = [5 1 2 4; "PkC_cs", "GoC", "MLI", "PkC_ss"];
     labels(s).frequency = zeros(size(baserates'));
 
     for i = 1:size(baselineFreqRanges, 1)
@@ -110,7 +110,7 @@ for s = 1:length(sessions)
     end
 
     figure; % Plot confusion matrix
-    plot_confusion_matrix(cm, corresponding_labels, 'Confusion Matrix', parula);
+    plot_confusion_matrix(cm, corresponding_labels, 'Confusion Matrix', bone);
     fname = sprintf('confusionMatrix_%s', session.id);
     printFigure ...
         ( gcf ...
@@ -118,6 +118,7 @@ for s = 1:length(sessions)
         , folder = fullfile(kwargs.outputFolder, subfolder) ...
         , formats = kwargs.fileTypes ...
         , size = kwargs.printSize ...
+        , removeAxisBackground = false...
         )
 
     cm_normalized = cm ./ sum(cm, 2); % Normalize confusion matrix
@@ -125,7 +126,7 @@ for s = 1:length(sessions)
     disp(cm_normalized);
 
     figure; % Plot normalized confusion matrix
-    plot_confusion_matrix(cm_normalized, corresponding_labels, 'Normalized Confusion Matrix', parula);
+    plot_confusion_matrix(cm_normalized, corresponding_labels, 'Normalized Confusion Matrix', bone);
     fname2 = sprintf('normalizedConfusionMatrix_%s', session.id);
 
     printFigure ...
@@ -134,15 +135,16 @@ for s = 1:length(sessions)
         , folder = fullfile(kwargs.outputFolder, subfolder) ...
         , formats = kwargs.fileTypes ...
         , size = kwargs.printSize ...
+        , removeAxisBackground = false...
         )
 end
 % Initialize empty arrays to store all labels
 all_frequency_labels = [];
 all_predicted_labels = [];
 
-% Loop through each session
-for i = 1:length(labels)
-    % Extract frequency labels and predicted labels for the current session
+
+for i = 1:length(labels)    % Loop through each label
+    % Extract frequency labels and predicted labels for the current label
     current_frequency_labels = labels(i).frequency(idcs(i).trace);
     current_predicted_labels = labels(i).predicted(idcs(i).c4);
 
@@ -151,16 +153,14 @@ for i = 1:length(labels)
     all_predicted_labels = [all_predicted_labels; current_predicted_labels];
 end
 
-% Compute the confusion matrix
-cm = confusionmat(all_frequency_labels, all_predicted_labels);
+cm = confusionmat(all_frequency_labels, all_predicted_labels);  % Compute the confusion matrix
 corresponding_labels = labels(1).names(unique([all_frequency_labels, all_predicted_labels]));
 
-% Display the confusion matrix
 disp('Confusion matrix across all sessions:');
 disp(cm);
 
 figure; % Plot confusion matrix
-plot_confusion_matrix(cm, corresponding_labels, 'Confusion Matrix', parula);
+plot_confusion_matrix(cm, corresponding_labels, 'Confusion Matrix', bone);
 fname = sprintf('allSessionsConfusionMatrix_%s', mouseName);
 
 printFigure ...
@@ -169,15 +169,15 @@ printFigure ...
     , folder = kwargs.outputFolder ...
     , formats = kwargs.fileTypes ...
     , size = kwargs.printSize ...
+    , removeAxisBackground = false...
     )
-
 
 cm_normalized = cm ./ sum(cm, 2); % Normalize confusion matrix
 disp('Normalized confusion matrix:');
 disp(cm_normalized);
 
 figure; % Plot normalized confusion matrix
-plot_confusion_matrix(cm_normalized, corresponding_labels, 'Normalized Confusion Matrix', parula);
+plot_confusion_matrix(cm_normalized, corresponding_labels, 'Normalized Confusion Matrix', bone);
 fname2 = sprintf('allSessionsNormalizedConfusionMatrix_%s', mouseName);
 
 printFigure ...
@@ -186,6 +186,7 @@ printFigure ...
     , folder = kwargs.outputFolder ...
     , formats = kwargs.fileTypes ...
     , size = kwargs.printSize ...
+    , removeAxisBackground = false...
     )
 
 end
@@ -205,6 +206,8 @@ function plot_confusion_matrix(cm, labels, title_text, cmap) % Function to plot 
     axis square;
     set(gca, 'TickDir', 'out');
 end
+
+
 
 
 
