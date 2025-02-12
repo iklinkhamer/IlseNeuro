@@ -9,6 +9,8 @@ Created on Wed Nov 20 15:14:00 2024
 import OpenEphys
 import os
 import shutil  
+import sys
+import re
     
 
 def convertOpenEphysDataToContinuous(mouse_name
@@ -39,6 +41,11 @@ def convertOpenEphysDataToContinuous(mouse_name
         
         print(f"Processing folder: {foldername}")
         
+        if foldername=="Lisbon_20230403121122":
+            continue
+        if foldername=="Lisbon_20230403124750":
+            continue
+        
         # Perform actions on each folder here
         source_folder = os.path.join(origin_folder, foldername, "Data")
         destination_folder = os.path.join(origin_folder, foldername, "c4", "continuous", "Data_AP_LFP")
@@ -50,11 +57,19 @@ def convertOpenEphysDataToContinuous(mouse_name
         source_file = os.path.join(source_folder, "openephys.dat")
         destination_file = os.path.join(destination_folder, "continuous.dat")
            
+        for filename in os.listdir(source_folder):
+            if filename.endswith(".continuous"):
+                match = re.match(r"(\d{3})", filename)
+                if match:
+                    match = str(match.group(1))  # Convert to an integer
+                    break  # Stop after finding the first match
+        
         if os.path.exists(destination_file):
            print("Continuous file already exists, skipping.")
-           continue
+           continue      
+        
        
-        OpenEphys.pack(source_folder, channels = channels)   
+        OpenEphys.pack_2(folderpath=source_folder, filename="openephys.dat", source=match, channels = channels)   
         
         
         # Move and rename the file
@@ -103,7 +118,13 @@ def convertOpenEphysDataToContinuous(mouse_name
         else:
             print(f"Source folder does not exist: {source_folder}")
             
-def main(mouse_name="ReserveMouse3"):
+def main(mouse_name=None):
+    if mouse_name is None:
+        if len(sys.argv) > 1:
+            mouse_name = sys.argv[1]
+        else:
+            print("Error: No mouse name provided")
+            sys.exit(1)
     convertOpenEphysDataToContinuous(mouse_name)    
         
 if __name__ == "__main__":

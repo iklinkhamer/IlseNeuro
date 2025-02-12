@@ -9,16 +9,16 @@ Created on Fri Feb  7 16:57:45 2025
 import OpenEphys_wrapper_IK
 import time
 
-mouse_names = ["Ana2", "Ana4", "Ana5"]
+mouse_names = ["Lisbon"]
 
 for m in range(len(mouse_names)):
     mouse_name = mouse_names[m]
 
     while True:
         try:
-            # Your main code here
+            
             OpenEphys_wrapper_IK.main(mouse_name)
-            # Simulating successful execution (remove this in actual use)
+
             if True:  
                 print("Code ran successfully!")
                 break  # Exit the loop when successful

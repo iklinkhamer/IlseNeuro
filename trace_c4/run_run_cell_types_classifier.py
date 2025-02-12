@@ -1,5 +1,5 @@
 #from npyx.testing import test_npyx
-#import sys
+import sys
 #sys.path.insert(0, '/home/no1/anaconda3/envs/new_env/lib/python3.10/site-packages')  # Ensure this is the correct path to 'new_env'
 #sys.path.insert(0, '/home/no1/anaconda3/envs/new_env/lib/python3.10/site-packages/npyx')  # Add npyx explicitly if needed
 
@@ -14,7 +14,8 @@ import os
 
 def run_cell_types_classifier_wrapper(mouse_name
                                       ,classify_again=True
-                                      ,directory="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/"):
+                                      ,directory="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/"
+                                      ,skip_without_continuous=True):
 
 
     # any spike sorted recording compatible with phy
@@ -46,6 +47,12 @@ def run_cell_types_classifier_wrapper(mouse_name
         if not os.path.exists(dp):
             print(f"Folder {dp} does not exist, skipping.")
             continue  # Skip to the next iteration if the folder doesn't exist
+        if not os.path.exists(f"{dp}/params.py"):
+            print(f"params.py folder not found in folder {sess_oebin}, skipping...")
+            continue
+        if not os.path.exists(f"{dp}/continuous/Data_AP_LFP/continuous.dat") and skip_without_continuous:
+            print(f"continuous.dat file not found, skipping")
+            continue
         if not classify_again and os.path.exists(cla_res_path):
             print(f"Session {dp} has already been classified and classify again is false, skipping.")
             continue
@@ -56,7 +63,13 @@ def run_cell_types_classifier_wrapper(mouse_name
         #run_cell_types_classifier(dp, raise_error=True)
 
 
-def main(mouse_name="ReserveMouse3", classify_again=True):
+def main(mouse_name=None, classify_again=False):
+    if mouse_name is None:
+        if len(sys.argv) > 1:
+            mouse_name = sys.argv[1]
+        else:
+            print("Error: No mouse name provided")
+            sys.exit(1)
     run_cell_types_classifier_wrapper(mouse_name, classify_again)
 
 
