@@ -41,11 +41,6 @@ def convertOpenEphysDataToContinuous(mouse_name
         
         print(f"Processing folder: {foldername}")
         
-        if foldername=="Lisbon_20230403121122":
-            continue
-        if foldername=="Lisbon_20230403124750":
-            continue
-        
         # Perform actions on each folder here
         source_folder = os.path.join(origin_folder, foldername, "Data")
         destination_folder = os.path.join(origin_folder, foldername, "c4", "continuous", "Data_AP_LFP")
@@ -56,6 +51,10 @@ def convertOpenEphysDataToContinuous(mouse_name
         # Define file paths
         source_file = os.path.join(source_folder, "openephys.dat")
         destination_file = os.path.join(destination_folder, "continuous.dat")
+
+        if os.path.exists(destination_file):
+           print("Continuous file already exists, skipping.")
+           continue
            
         for filename in os.listdir(source_folder):
             if filename.endswith(".continuous"):
@@ -63,14 +62,8 @@ def convertOpenEphysDataToContinuous(mouse_name
                 if match:
                     match = str(match.group(1))  # Convert to an integer
                     break  # Stop after finding the first match
-        
-        if os.path.exists(destination_file):
-           print("Continuous file already exists, skipping.")
-           continue      
-        
        
-        OpenEphys.pack_2(folderpath=source_folder, filename="openephys.dat", source=match, channels = channels)   
-        
+        OpenEphys.pack_2(folderpath=source_folder, filename="openephys.dat", source=match, channels = channels)
         
         # Move and rename the file
         if os.path.exists(source_file):
@@ -100,7 +93,7 @@ def convertOpenEphysDataToContinuous(mouse_name
         destination_folder = os.path.join(origin_folder, foldername, "c4")
         
         # Define the files to exclude
-        excluded_files = {'Data4KS2.bin', 'temp_wh.dat'}  # Add all filenames to exclude
+        excluded_files = {'Data4KS2.bin', 'temp_wh.dat', 'rez.mat', 'pc_features.npy', 'template_features.npy'}  # Add all filenames to exclude
         
         def ignore_files(dir, files):
             """Custom ignore function to exclude specific files."""
