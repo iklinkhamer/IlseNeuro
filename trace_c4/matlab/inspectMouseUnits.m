@@ -36,10 +36,10 @@
 
 function inspectMouseUnits(mouseName, kwargs)
 arguments
-    mouseName = "Seattle";
+    mouseName = "Ana2";
     kwargs.saveFigs = true;
-    kwargs.outputFolder = "~/Documents/c4_neurons_temp_output/rasters 10% contamination good units";
-    kwargs.directory = fullfile("/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/", mouseName);
+    kwargs.outputFolder = fullfile(Env.getBayesLabUserRoot,"/TraceExperiments/AnalysisOutput/Trace C4 Figures/rasters 10% contamination good units"); 
+    kwargs.directory = fullfile(Env.getBayesLabUserRoot, "/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/", mouseName);
 
 end
 
@@ -48,13 +48,13 @@ mouse = Subject(mouseName);
 sessions = mouse.collectSessions(sessionkinds="EPHYS");
 
 fprintf("Found %d sessions for %s\n\n", numel(sessions), mouseName)
-% i= 0;
+%i= 0;
 
 for session = sessions(:)'
-    % i = i+1;
-    % if i ~=6
+    %i = i+1;
+    %if i ~=2
     %     continue
-    % end
+    %end
     %
 
 
@@ -91,8 +91,23 @@ for session = sessions(:)'
         neuron_numbers = sort(neuron_numbers);
         %load(fullfile(classification_folder_path, "neurons_filtered_c4.mat"));
         disp(neuron_numbers); % Outputs: [1 23 42]
+
+        c4_folder = fileparts(classification_folder_path);
+        classification_neurons_ = readtable(fullfile(c4_folder,"cluster_predicted_cell_type.tsv"), 'FileType', 'text', 'Delimiter', '\t');
+        cell_types_ = unique(classification_neurons_(2:end,2));
+        cell_types = cell_types_.predicted_cell_type;
+
+        classification_neurons = string(classification_neurons_.predicted_cell_type);
+        neuron_ids = double(classification_neurons_.cluster_id);
+
         if kwargs.saveFigs
-            IK.IK_PSTH_Selection(units, outputFolder=kwargs.outputFolder, selectBatchMode=true, selectArray=neuron_numbers)
+            for t = 1:size(cell_types,1)
+                cell_type = cell_types(t);
+                idcs_neurons_of_this_cell_type = classification_neurons==cell_type;
+                neurons_of_this_cell_type = neuron_ids(idcs_neurons_of_this_cell_type);
+                IK.IK_PSTH_Selection(units, outputFolder=fullfile(kwargs.outputFolder, cell_type), selectBatchMode=true, selectArray=neurons_of_this_cell_type)
+        
+            end
         end
         neuronIDs = cellfun(@(x) str2double(regexp(x, '\d+$', 'match', 'once')), [units.id]);
         [~,neuronIDs_filtered_in] = intersect(neuronIDs,neuron_numbers);
@@ -102,7 +117,7 @@ for session = sessions(:)'
 
         IK.IK_PSTH_Selection(units, outputFolder=fullfile(fileparts(kwargs.outputFolder), "rasters 10% contamination filtered-out units"), selectBatchMode=true, selectArray=neuronIDs_filtered_out_units)
     catch
-        disp("Catch")
+        disp("Catch. Maybe check if all files are synchronized")
     end
 
 end
