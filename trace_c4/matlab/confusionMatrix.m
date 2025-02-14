@@ -15,21 +15,19 @@
 
 function confusionMatrix(mouseName, kwargs)
 arguments
-    mouseName string = "Yosemite"
+    mouseName string = "Lisbon"
     kwargs.neuronFilterFn = @(neuron) true;
     kwargs.outputFolder string = "~/Documents/c4_neurons_temp_output/confusionMatrix";
     kwargs.subfolder54esdr56t2
     kwargs.fileTypes (1,:) string = ["png", "epsc"]; % "fig",
     kwargs.trialGroupingForPsth
     kwargs.printSize (1,2) double = [602 291]; % rectangular %[334 291] % square-ish aspect ratio for single psth plot
-    kwargs.batchMode (1,1) logical = false % if true, save all units for which neuronFilterFn returns true
     kwargs.lineWidth (1,1) {isreal} = 0.5;
-    kwargs.selectBatchMode (1,1) logical = false % if true, save a selection of neurons provided in an array
     kwargs.selectArray double = [];
     kwargs.c4_folder string = "c4";
     kwargs.c4_res_folder string = "cell_type_classification";
     kwargs.labels = [1, 2, 3, 4, 5, 6; "GoC", "MLI", "MFB", "PkC_ss", "PkC_cs", "unlabeled"];
-    kwargs.saveMismatchFigs logical = false;
+    kwargs.saveMismatchFigs logical = true;
 end
 close all
 
