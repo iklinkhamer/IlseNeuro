@@ -15,7 +15,7 @@ from pathlib import Path
 
 def plot_trial_spikes(trial, spike_times, y=None, ax=None, annotation_fields=None, spike_height=None):
     if y is None:
-        y = np.where(indices == i)[0][0]
+        y = trial.index
     if ax is None:
         fig, ax = plt.subplots()
     if annotation_fields is None:
