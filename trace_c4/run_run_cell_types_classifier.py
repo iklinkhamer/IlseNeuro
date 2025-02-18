@@ -14,27 +14,29 @@ import os
 
 def run_cell_types_classifier_wrapper(mouse_name
                                       ,classify_again=True
+                                      ,switch_sessions=False
                                       ,directory="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/"
                                       ,skip_without_continuous=True):
 
 
     # any spike sorted recording compatible with phy
     # (e.g. kilosort output)
-    dp_base = f"{directory}{mouse_name}/"
-
+    dp_base = os.path.join(directory, mouse_name)
     if "ReserveMouse" in mouse_name:
         dp_base = dp_base.replace("MainFolder", "ReserveFolder")
 
-
-    # Get all folders with mouse_name in their name and without "copy"
-    mouse_folders = [
-        folder for folder in os.listdir(dp_base)
-        if os.path.isdir(os.path.join(dp_base, folder))
-        and mouse_name in folder
-        and "copy" not in folder
-        and "Copy"  not in folder
-    ]
-    mouse_folders.sort()
+    if switch_sessions:
+        mouse_folders = [os.path.join(dp_base, "SwitchSessionStitching")]
+    else:
+        # Get all folders with mouse_name in their name and without "copy"
+        mouse_folders = [
+            folder for folder in os.listdir(dp_base)
+            if os.path.isdir(os.path.join(dp_base, folder))
+               and mouse_name in folder
+               and "copy" not in folder
+               and "Copy" not in folder
+        ]
+        mouse_folders.sort()
 
     phy_folder = "c4"
 
@@ -63,14 +65,14 @@ def run_cell_types_classifier_wrapper(mouse_name
         #run_cell_types_classifier(dp, raise_error=True)
 
 
-def main(mouse_name=None, classify_again=False):
+def main(mouse_name=None, classify_again=False, switchSessions=False):
     if mouse_name is None:
         if len(sys.argv) > 1:
             mouse_name = sys.argv[1]
         else:
             print("Error: No mouse name provided")
             sys.exit(1)
-    run_cell_types_classifier_wrapper(mouse_name, classify_again)
+    run_cell_types_classifier_wrapper(mouse_name, classify_again, switchSessions)
 
 
 if __name__ == "__main__":

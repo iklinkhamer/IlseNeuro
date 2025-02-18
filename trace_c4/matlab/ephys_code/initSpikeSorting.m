@@ -21,7 +21,7 @@ while true
         for s = sessions
             fprintf("Mouse: %s, %s Session: %d\n", mcode, P.mouseNames(find(P.mouseList == mcode)), s)
 
-            dataFileTypes = ["RAWdata*.bin", "continuous*.dat"];
+            dataFileTypes = ["RAWdata*.bin", "continuous*.dat", "Data4KS2.bin"];
             for d = dataFileTypes
                 [files, folders] = recursiveFileSearch(d, mcode, s);
                 if ~isempty(files)

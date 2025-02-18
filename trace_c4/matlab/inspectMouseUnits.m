@@ -36,11 +36,11 @@
 
 function inspectMouseUnits(mouseName, kwargs)
 arguments
-    mouseName = "Ana2";
+    mouseName = "Venice";
     kwargs.saveFigs = true;
-    kwargs.outputFolder = fullfile(Env.getBayesLabUserRoot,"/TraceExperiments/AnalysisOutput/Trace C4 Figures/rasters 10% contamination good units"); 
+    kwargs.outputFolder = fullfile(Env.getBayesLabUserRoot,"/TraceExperiments/AnalysisOutput/Trace C4 Figures/rasters 10% contamination good units");
     kwargs.directory = fullfile(Env.getBayesLabUserRoot, "/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/", mouseName);
-
+    kwargs.evaluateC4Analysis = false;
 end
 
 mouse = Subject(mouseName);
@@ -58,19 +58,21 @@ for session = sessions(:)'
     %
 
 
-    try
-        try % AnalyzedEphys might not exist
-            units = session.collectKilosortUnits();
-        catch
-            fprintf("Warning: could not load AnalyzedEphys for session %s\n\n", session.timestampIdStr)
-            continue
-        end
 
-        fprintf("Found %d neurons for session %s\n\n", numel(units), session.timestampIdStr)
+    try % AnalyzedEphys might not exist
+        units = session.collectKilosortUnits();
+    catch
+        fprintf("Warning: could not load AnalyzedEphys for session %s\n\n", session.timestampIdStr)
+        continue
+    end
 
-        if not(isfolder(kwargs.outputFolder))
-            mkdir(kwargs.outputFolder)
-        end
+    fprintf("Found %d neurons for session %s\n\n", numel(units), session.timestampIdStr)
+
+    if not(isfolder(kwargs.outputFolder))
+        mkdir(kwargs.outputFolder)
+    end
+
+    if kwargs.evaluateC4Analysis
         classification_folder_path = fullfile(kwargs.directory, mouseName+"_"+session.timestampIdStr, "c4", "cell_type_classification");
 
         neuron_numbers = [];    % Initialize an empty array to store numbers
@@ -100,26 +102,29 @@ for session = sessions(:)'
         classification_neurons = string(classification_neurons_.predicted_cell_type);
         neuron_ids = double(classification_neurons_.cluster_id);
 
+
+
         if kwargs.saveFigs
             for t = 1:size(cell_types,1)
                 cell_type = cell_types(t);
                 idcs_neurons_of_this_cell_type = classification_neurons==cell_type;
                 neurons_of_this_cell_type = neuron_ids(idcs_neurons_of_this_cell_type);
                 IK.IK_PSTH_Selection(units, outputFolder=fullfile(kwargs.outputFolder, cell_type), selectBatchMode=true, selectArray=neurons_of_this_cell_type)
-        
+
             end
         end
         neuronIDs = cellfun(@(x) str2double(regexp(x, '\d+$', 'match', 'once')), [units.id]);
         [~,neuronIDs_filtered_in] = intersect(neuronIDs,neuron_numbers);
         mask = true(1,length(neuronIDs));
-        mask(neuronIDs_filtered_in) = false; 
+        mask(neuronIDs_filtered_in) = false;
         neuronIDs_filtered_out_units = neuronIDs(mask);
 
         IK.IK_PSTH_Selection(units, outputFolder=fullfile(fileparts(kwargs.outputFolder), "rasters 10% contamination filtered-out units"), selectBatchMode=true, selectArray=neuronIDs_filtered_out_units)
-    catch
-        disp("Catch. Maybe check if all files are synchronized")
-    end
 
+    else
+        IK.IK_PSTH_Selection(units, outputFolder=fullfile(fileparts(kwargs.outputFolder), "rasters (not filtered)"))
+
+    end
 end
 end
 

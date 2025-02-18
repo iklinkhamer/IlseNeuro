@@ -10,7 +10,8 @@ source /home/no1/Documents/code/IlseNeuro/trace_c4/.venv/bin/activate
 DROPBOX_PATH="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder"
 
 # List of mouse folders to process
-MICE=("Jackson" "Zurich" "York" "Xanthi" "Greene" "Newark" "Pittsburg" "Reno" "Venice" "Tallinn" "Rotterdam" "Queens" "Porto" "Kyiv" "Istanbul" "Amsterdam" "Copenhagen" "Missouri")
+MICE=("Venice" "Tallinn" "Rotterdam" "Queens")
+# "Reno" "Porto" "Kyiv" "Istanbul" "Amsterdam" "Copenhagen" "Missouri"
 
 # Function to synchronize (force Dropbox to download the folder)
 sync_folder() {
