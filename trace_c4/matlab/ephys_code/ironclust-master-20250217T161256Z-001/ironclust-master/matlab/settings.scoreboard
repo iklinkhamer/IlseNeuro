@@ -1,0 +1,36 @@
+% #Pre-processing
+maxDist_site_um = {50};
+maxDist_site_spk_um = {75};
+vcFilter = {'bandpass'};
+freqLim = {[300, 6000]};
+vcCommonRef = {'mean'};
+
+% #Spike detection
+qqFactor = {4.5};
+spkLim_ms = {[-.25, .75]}; 
+
+% #Feature extraction
+%feature_type = {'gpca'};
+pc_per_chan = {2};
+
+% #Clustering
+fSpatialMask_clu = {1};
+
+% #Auto-merging
+maxWavCor = {1};
+fGpu={0};
+fGpu_sort={1};
+
+% #Drift
+batch_sec_drift = {300};
+step_sec_drift = {20};
+
+% #Noise
+fft_thresh = {8};
+delta_cut = {1};
+
+% #Sort mode
+sort_mode = {1};
+post_merge_mode = {1};
+post_merge_mode2 = {19};
+post_merge_mode0 = {[12,15,17]};
