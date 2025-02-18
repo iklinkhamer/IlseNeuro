@@ -17,7 +17,7 @@ mouse_name = "Ana2"
 if runSwitchSessionsPipeline:
     #Switch sessions pipeline
     
-    stitch_CH_continuous_files_switch_sessions(mouse_name)
+    stitch_CH_continuous_files_switch_sessions.main(mouse_name)
     
     OpenEphys_wrapper_IK.main(  mouse_name
                               , switchSessions=True)
@@ -29,6 +29,6 @@ if runSwitchSessionsPipeline:
 else:
     #OpenEphys_wrapper_IK.main(mouse_name, switchSessions=False)
     run_run_cell_types_classifier.main(     mouse_name
-                                       ,    classify_again=False
-                                       ,    switchSessions=False)
+                                       ,    classify_again=True
+                                       ,    switchSessions=True)
 
