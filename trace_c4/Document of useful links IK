@@ -9,6 +9,10 @@ Dropbox: https://www.dropbox.com/home/Lucas%20Bayones/TraceExperiments/ComplexSp
 How to fix xcb:
 pip install opencv-python-headless
 
+
+run irc2 in matlab:
+	irc2('/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/Venice/Venice_20240523115524 (copy)/Extraction2Bin/Data4KS2.bin', '/home/no1/Documents/code/IlseNeuro/trace_c4/matlab/ephys_code/DBC_3.1-64-H2_IK.prb','/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/Venice/Venice_20240523115524 (copy)/Extraction2Bin/irc')
+
 Trash - Alle openstaande links die ik niet kwijt wilde raken dus voor het afsluiten van het venster heb ik ze hier gezet:
 https://github.com/AlexImmer/Laplace
 https://github.com/m-beau/NeuroPyxels/blob/cell_types_classifier/npyx/c4/predict_cell_types.py
