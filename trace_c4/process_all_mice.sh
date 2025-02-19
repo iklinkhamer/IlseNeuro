@@ -10,7 +10,7 @@ source /home/no1/Documents/code/IlseNeuro/trace_c4/.venv/bin/activate
 DROPBOX_PATH="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder"
 
 # List of mouse folders to process
-MICE=("Venice" "Tallinn" "Rotterdam" "Queens")
+MICE=("Amsterdam" "Copenhagen" "Missouri")
 # "Reno" "Porto" "Kyiv" "Istanbul" "Amsterdam" "Copenhagen" "Missouri"
 
 # Function to synchronize (force Dropbox to download the folder)
@@ -188,7 +188,7 @@ desync_folder() {
     local folder_path="$DROPBOX_PATH/$folder"
 
     #echo "Desynchronizing $folder..."
-    #dropbox exclude add "$folder_path"
+    dropbox exclude add "$folder_path"
 }
 
 # Main loop to iterate through all mice

@@ -56,11 +56,20 @@ for mcode = mousecodes
         % end
 
         configFileName = "'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/Venice/Venice_20240523111730(copy)/Extraction2Bin/Config_h32_oe_2.prm'";
+        configFileName = "'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/Venice/Venice_20240523115524 (copy)/Extraction2Bin/Config_h32_oe_2.prm'";
         configFileName = "'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/Venice/Venice_20240523111730(copy)/c4/continuous/Data_AP_LFP/Config_h32_oe_2.prm'";
+
+        output_dir = "'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/Venice/Venice_20240523115524 (copy)/Extraction2Bin/irc'";
+        probe_file = "'/home/no1/Documents/code/IlseNeuro/trace_c4/matlab/ephys_code/DBC_3.1-64-H2_IK.prb'";
+        data_path = "'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/Venice/Venice_20240523115524 (copy)/Extraction2Bin/Data4KS2.bin'";
         if isfile(erase(configFileName, ".prm") + "_full.prm")
-            str = "irc_IK manual " + configFileName;
+            str = "irc_IK_2025 manual " + configFileName;
         else
-            str = "irc_IK full " + configFileName;
+            % try
+            %     str = "irc traces" + configFileName;
+            % catch
+                str = "irc_IK_2025 full " + configFileName;
+            % end
         end
 
         eval(str)            

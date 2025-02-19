@@ -10,8 +10,10 @@ import OpenEphys_wrapper_IK
 import run_run_cell_types_classifier
 import stitch_CH_continuous_files_switch_sessions
 
-runSwitchSessionsPipeline=True
-mouse_name = "Ana2"
+runSwitchSessionsPipeline=False
+switchSessions = False
+classify_again = False
+mouse_name = "Amsterdam"
 
 
 if runSwitchSessionsPipeline:
@@ -20,15 +22,15 @@ if runSwitchSessionsPipeline:
     stitch_CH_continuous_files_switch_sessions.main(mouse_name)
     
     OpenEphys_wrapper_IK.main(  mouse_name
-                              , switchSessions=True)
+                              , switchSessions=switchSessions)
     
     run_run_cell_types_classifier.main(     mouse_name
-                                       ,    classify_again=False
-                                       ,    switchSessions=True)
+                                       ,    classify_again=classify_again
+                                       ,    switchSessions=switchSessions)
     
 else:
-    #OpenEphys_wrapper_IK.main(mouse_name, switchSessions=False)
+    OpenEphys_wrapper_IK.main(mouse_name, switchSessions=switchSessions)
     run_run_cell_types_classifier.main(     mouse_name
-                                       ,    classify_again=True
-                                       ,    switchSessions=True)
+                                       ,    classify_again=classify_again
+                                       ,    switchSessions=switchSessions)
 
