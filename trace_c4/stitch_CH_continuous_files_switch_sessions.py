@@ -66,7 +66,7 @@ def read_folders_from_file(mouse_name
     return folders  # Could return 2 or 3 folders depending on file content
 
 
-def main(mouse_name="Ana4"
+def main(mouse_name="Orleans"
          , directory="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/" 
          , switch_folder_name="SwitchSessionStitching"
          , data_folder_name="Data"

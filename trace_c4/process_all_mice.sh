@@ -10,14 +10,21 @@ source /home/no1/Documents/code/IlseNeuro/trace_c4/.venv/bin/activate
 DROPBOX_PATH="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder"
 
 # List of mouse folders to process
-MICE=("Amsterdam" "Copenhagen" "Missouri")
-# "Reno" "Porto" "Kyiv" "Istanbul" "Amsterdam" "Copenhagen" "Missouri"
+MICE=("Yosemite" "Venice" "Seattle" "Quimper" "Orleans" "Newark" "Madrid" "Lisbon" "Lincoln" "Jackson" "Houston" "Ana5" "Ana4" "Ana2" "ReserveMouse3" "Dallas" "Flint" "Greene" "Iowa" "Missouri" "Pittsburg" "Queens" "Reno" "Zachary" "Kyiv" "Istanbul" "Copenhagen" "Rotterdam" "Willemstad" "Zurich" "York" "Xanthi")
+# "Reno" "Amsterdam"
 
 # Function to synchronize (force Dropbox to download the folder)
 sync_folder() {
     local folder="$1"
     local folder_path="$DROPBOX_PATH/$folder"
-    
+
+    mouse_skip_list=("Yosemite" "Venice" "Seattle" "Quimper" "Orleans" "Newark" "Madrid" "Lisbon" "Lincoln" "Jackson" "Houston" "Ana5" "Ana4" "Ana2")
+    # Check if folder is in the skip list
+    if [[ " ${mouse_skip_list[@]} " =~ " $folder " ]]; then
+        echo "Skipping synchronization for $folder"
+        return
+    fi
+
     echo "Ensuring $folder is synchronized..."
     dropbox exclude remove "$folder_path" 
     
@@ -31,7 +38,7 @@ sync_folder() {
             folder_name=$(basename "$inner_folder")
 
             # List of folders we want to KEEP (not exclude)
-            specific_folder_names=("Extraction2Bin" "Data" "c4")
+            specific_folder_names=("c4") #specific_folder_names=("Extraction2Bin" "Data" "c4")
 
             # If folder is NOT in the allowed list, exclude it
             if [[ ! " ${specific_folder_names[@]} " =~ " $folder_name " ]]; then
@@ -157,6 +164,22 @@ run_c4() {
     echo "c4 processing complete for $folder."
 }
 
+run_inspect_predicted_cell_types() {
+    local folder="$1"
+    local folder_path="$DROPBOX_PATH/$folder"
+
+    echo "Inspecting predicted cell types for $folder..."
+
+    /home/no1/Documents/code/IlseNeuro/trace_c4/.venv/bin/python3.10 inspectPredictedCellTypes.py "$folder"
+
+    if [[ $? -ne 0 ]]; then
+        echo "Error: inspecting cell types failed for $folder. Exiting."
+        exit 1
+    fi
+
+    echo "inspection of cell types complete for $folder."
+}
+
 desync_no_longer_needed_folders_inside_c4() {
     local folder="$1"
     local folder_path="$DROPBOX_PATH/$folder"
@@ -186,7 +209,12 @@ desync_no_longer_needed_folders_inside_c4() {
 desync_folder() {
     local folder="$1"
     local folder_path="$DROPBOX_PATH/$folder"
-
+    mouse_skip_list=("Yosemite" "Venice" "Seattle" "Quimper" "Orleans" "Newark" "Madrid" "Lisbon" "Lincoln" "Jackson" "Houston" "Ana5" "Ana4" "Ana2")
+    # Check if folder is in the skip list
+    if [[ " ${mouse_skip_list[@]} " =~ " $folder " ]]; then
+        echo "Skipping synchronization for $folder"
+        return
+    fi
     #echo "Desynchronizing $folder..."
     dropbox exclude add "$folder_path"
 }
@@ -209,6 +237,7 @@ for MOUSE in "${MICE[@]}"; do
     run_c4 "$MOUSE"
 
     #desync_no_longer_needed_folders_inside_c4 "$MOUSE"
+    run_inspect_predicted_cell_types "$MOUSE"
     
     # Desynchronize after processing
     desync_folder "$MOUSE"

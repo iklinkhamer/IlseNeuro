@@ -15,6 +15,8 @@ import os
 def run_cell_types_classifier_wrapper(mouse_name
                                       ,classify_again=True
                                       ,switch_sessions=False
+                                      ,contamination_ratio=0.1
+                                      ,confidence_ratio_threshold=2
                                       ,directory="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/"
                                       ,skip_without_continuous=True):
 
@@ -44,6 +46,9 @@ def run_cell_types_classifier_wrapper(mouse_name
 
         print(f"Processing folder: {sess_oebin}")
 
+        #if sess_oebin != "Yosemite_20210512173554":
+        #    continue
+
         dp = path.join(dp_base, sess_oebin, phy_folder)
         cla_res_path = path.join(dp_base, sess_oebin, phy_folder, "cell_type_classification")
         if not os.path.exists(dp):
@@ -59,20 +64,23 @@ def run_cell_types_classifier_wrapper(mouse_name
             print(f"Session {dp} has already been classified and classify again is false, skipping.")
             continue
 
-        run_cell_types_classifier(dp, quality = 'all', parallel = False, fp_threshold = 0.1, fn_threshold = 0.1)
+        save_path = os.path.join(dp, f"c4_results_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}")
+        os.makedirs(save_path, exist_ok=True)
+
+        run_cell_types_classifier(dp, quality = 'all', parallel = False, fp_threshold = contamination_ratio, fn_threshold = contamination_ratio, threshold = confidence_ratio_threshold, save_path = save_path)
 
         # if any test fails, re-run them with the following to print the error log, and try to fix it or post an issue on github:
         #run_cell_types_classifier(dp, raise_error=True)
 
 
-def main(mouse_name=None, classify_again=False, switchSessions=False):
+def main(mouse_name=None, classify_again=True, switch_sessions=False, contamination_ratio=0.1, confidence_ratio_threshold=1.5):
     if mouse_name is None:
         if len(sys.argv) > 1:
             mouse_name = sys.argv[1]
         else:
             print("Error: No mouse name provided")
             sys.exit(1)
-    run_cell_types_classifier_wrapper(mouse_name, classify_again, switchSessions)
+    run_cell_types_classifier_wrapper(mouse_name, classify_again, switch_sessions, contamination_ratio, confidence_ratio_threshold)
 
 
 if __name__ == "__main__":
