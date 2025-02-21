@@ -18,7 +18,7 @@ sync_folder() {
     local folder="$1"
     local folder_path="$DROPBOX_PATH/$folder"
 
-    mouse_skip_list=("Yosemite" "Venice" "Seattle" "Quimper" "Orleans" "Newark" "Madrid" "Lisbon" "Lincoln" "Jackson" "Houston" "Ana5" "Ana4" "Ana2")
+    mouse_skip_list=("Yosemite" "Venice" "Seattle" "Quimper" "Orleans" "Newark" "Madrid" "Lisbon" "Lincoln" "Jackson" "Houston")
     # Check if folder is in the skip list
     if [[ " ${mouse_skip_list[@]} " =~ " $folder " ]]; then
         echo "Skipping synchronization for $folder"
@@ -72,17 +72,16 @@ sync_folder() {
 wait_for_sync() {
     local folder="$1"
     local folder_path="$DROPBOX_PATH/$folder"
-    
-    sleep 10
 
     echo "Checking sync status for: $folder"
+    sleep 5
 
     # Collect all subfolder paths that have a "Data" subdirectory
     mapfile -t data_folders < <(find "$folder_path" -mindepth 1 -maxdepth 1 -type d -exec test -d "{}/Data" \; -print)
 
     if [[ ${#data_folders[@]} -eq 0 ]]; then
         echo "No valid subfolders found in $folder. Exiting."
-        return 1
+        return
     fi
 
     while true; do
@@ -158,7 +157,7 @@ run_c4() {
 
     if [[ $? -ne 0 ]]; then
         echo "Error: c4 processing failed for $folder. Exiting."
-        exit 1
+        return 1
     fi
 
     echo "c4 processing complete for $folder."
@@ -174,7 +173,7 @@ run_inspect_predicted_cell_types() {
 
     if [[ $? -ne 0 ]]; then
         echo "Error: inspecting cell types failed for $folder. Exiting."
-        exit 1
+        return
     fi
 
     echo "inspection of cell types complete for $folder."
@@ -209,7 +208,7 @@ desync_no_longer_needed_folders_inside_c4() {
 desync_folder() {
     local folder="$1"
     local folder_path="$DROPBOX_PATH/$folder"
-    mouse_skip_list=("Yosemite" "Venice" "Seattle" "Quimper" "Orleans" "Newark" "Madrid" "Lisbon" "Lincoln" "Jackson" "Houston" "Ana5" "Ana4" "Ana2")
+    mouse_skip_list=("Yosemite" "Venice" "Seattle" "Orleans" "Newark" "Madrid" "Lisbon" "Lincoln" "Jackson" "Houston")
     # Check if folder is in the skip list
     if [[ " ${mouse_skip_list[@]} " =~ " $folder " ]]; then
         echo "Skipping synchronization for $folder"
@@ -220,33 +219,35 @@ desync_folder() {
 }
 
 # Main loop to iterate through all mice
+# Main loop to iterate through all mice
 for MOUSE in "${MICE[@]}"; do
     echo "Starting process for $MOUSE..."
 
     # Ensure folder is set to sync
-    sync_folder "$MOUSE"
-    
+    sync_folder "$MOUSE" || { echo "Failed to sync folder for $MOUSE. Skipping..."; continue; }
+
     # Wait until Dropbox finishes syncing
     wait_for_sync "$MOUSE"
 
     # Process the data using Python
-    process_data "$MOUSE"
+    process_data "$MOUSE" || { echo "Processing failed for $MOUSE. Skipping..."; continue; }
 
-    desync_no_longer_needed_folders "$MOUSE"    
-    
-    run_c4 "$MOUSE"
+    desync_no_longer_needed_folders "$MOUSE" || { echo "Failed to desync some folders for $MOUSE. Continuing..."; }
 
-    #desync_no_longer_needed_folders_inside_c4 "$MOUSE"
-    run_inspect_predicted_cell_types "$MOUSE"
-    
+    run_c4 "$MOUSE" || { echo "C4 failed for $MOUSE. Skipping..."; continue; }
+
+    # run_inspect_predicted_cell_types should also be handled safely
+    run_inspect_predicted_cell_types "$MOUSE" || { echo "Inspection failed for $MOUSE. Continuing..."; }
+
     # Desynchronize after processing
-    desync_folder "$MOUSE"
-    
+    desync_folder "$MOUSE" || { echo "Failed to desync folder for $MOUSE. Continuing..."; }
+
     sleep 1800
 
     echo "Completed processing for $MOUSE."
     echo "----------------------------------"
 done
+
 
 echo "All mice processed successfully!"
 
