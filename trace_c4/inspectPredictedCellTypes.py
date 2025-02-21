@@ -171,6 +171,11 @@ def main(mouse_name=None,
                 folder_path = os.path.join(dp_base, folder, "c4")
             else:
                 folder_path = os.path.join(dp_base, folder, "c4", "c4_results_fpfnThreshold_0.1_confidenceRatio_1.5")
+            
+            if not os.path.exists(folder_path):
+                print("Results folder not found, skipping.")
+                continue
+            
             tsv_files = [f for f in os.listdir(folder_path) if f == 'cluster_predicted_cell_type.tsv']
 
             for tsv_file in tsv_files:

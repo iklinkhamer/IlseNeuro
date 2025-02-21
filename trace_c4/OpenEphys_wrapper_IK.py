@@ -58,6 +58,10 @@ def convertOpenEphysDataToContinuous(   mouse_name
         if os.path.exists(destination_file):
            print("Continuous file already exists, skipping.")
            continue
+
+        if not os.path.exists(source_folder):
+            print("Data folder not found, skipping.")
+            continue
            
         for filename in os.listdir(source_folder):
             if filename.endswith(".continuous"):

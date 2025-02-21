@@ -46,7 +46,7 @@ def run_cell_types_classifier_wrapper(mouse_name
 
         print(f"Processing folder: {sess_oebin}")
 
-        #if sess_oebin != "Yosemite_20210512173554":
+        #if sess_oebin != "Seattle_20200909140005":
         #    continue
 
         dp = path.join(dp_base, sess_oebin, phy_folder)
