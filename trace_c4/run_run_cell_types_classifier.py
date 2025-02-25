@@ -27,18 +27,20 @@ def run_cell_types_classifier_wrapper(mouse_name
     if "ReserveMouse" in mouse_name:
         dp_base = dp_base.replace("MainFolder", "ReserveFolder")
 
+    # Get all folders with mouse_name in their name and without "copy"
+    mouse_folders = [
+        folder for folder in os.listdir(dp_base)
+        if os.path.isdir(os.path.join(dp_base, folder))
+           and mouse_name in folder
+           and "copy" not in folder
+           and "Copy" not in folder
+    ]
+    mouse_folders.sort()
+
     if switch_sessions:
-        mouse_folders = [os.path.join(dp_base, "SwitchSessionStitching")]
-    else:
-        # Get all folders with mouse_name in their name and without "copy"
-        mouse_folders = [
-            folder for folder in os.listdir(dp_base)
-            if os.path.isdir(os.path.join(dp_base, folder))
-               and mouse_name in folder
-               and "copy" not in folder
-               and "Copy" not in folder
-        ]
-        mouse_folders.sort()
+        switch_folder = os.path.join(dp_base, "SwitchSessionStitching")
+        if os.path.exists(switch_folder):
+            mouse_folders.append(switch_folder)
 
     phy_folder = "c4"
 
@@ -73,7 +75,7 @@ def run_cell_types_classifier_wrapper(mouse_name
         #run_cell_types_classifier(dp, raise_error=True)
 
 
-def main(mouse_name=None, classify_again=True, switch_sessions=False, contamination_ratio=0.1, confidence_ratio_threshold=1.5):
+def main(mouse_name=None, classify_again=True, switch_sessions=True, contamination_ratio=0.1, confidence_ratio_threshold=1.5):
     if mouse_name is None:
         if len(sys.argv) > 1:
             mouse_name = sys.argv[1]

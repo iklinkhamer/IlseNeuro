@@ -11,6 +11,7 @@ import os
 import shutil  
 import sys
 import re
+import stitch_CH_continuous_files_switch_sessions
     
 
 def convertOpenEphysDataToContinuous(   mouse_name
@@ -23,21 +24,26 @@ def convertOpenEphysDataToContinuous(   mouse_name
     if "ReserveMouse" in mouse_name:
         dp_base = dp_base.replace("MainFolder", "ReserveFolder")
 
+    # Get all folders with mouse_name in their name and without "copy"
+    mouse_folders = [
+        folder for folder in os.listdir(dp_base)
+        if os.path.isdir(os.path.join(dp_base, folder))
+           and mouse_name in folder
+           and "copy" not in folder
+           and "Copy" not in folder
+    ]
+    mouse_folders.sort()
+
     if switch_sessions:
-        mouse_folders = [os.path.join(dp_base, "SwitchSessionStitching")]
-    else:
-        # Get all folders with mouse_name in their name and without "copy"
-        mouse_folders = [
-            folder for folder in os.listdir(dp_base)
-            if os.path.isdir(os.path.join(dp_base, folder))
-               and mouse_name in folder
-               and "copy" not in folder
-               and "Copy" not in folder
-        ]
-        mouse_folders.sort()
-    
-    
-    # Print the list of matching folders
+
+        switch_folder = os.path.join(dp_base, "SwitchSessionStitching")
+        if os.path.exists(switch_folder):
+            mouse_folders.append(switch_folder)
+            switch_folder_data = os.path.join(switch_folder, "Data")
+            if not os.path.exists(switch_folder_data):
+                stitch_CH_continuous_files_switch_sessions.main(mouse_name)
+
+                # Print the list of matching folders
     print(mouse_folders)
     
     for foldername in mouse_folders:
@@ -119,7 +125,7 @@ def convertOpenEphysDataToContinuous(   mouse_name
             print(f"Source folder does not exist: {source_folder}")
             
 def main(   mouse_name=None
-         ,  switch_sessions=False):
+         ,  switch_sessions=True):
     if mouse_name is None:
         if len(sys.argv) > 1:
             mouse_name = sys.argv[1]

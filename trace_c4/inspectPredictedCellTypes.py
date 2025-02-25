@@ -118,6 +118,25 @@ def plot_cell_type_counts_per_session(session_data, save_path):
 
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
     plt.close()
+    
+def save_counts_to_tsv(cell_type_counts_per_session, total_cell_type_counts, total_fractions, save_path):
+    """Save cell type counts and fractions to a TSV file."""
+    with open(save_path, 'w') as f:
+        # Write header
+        f.write("Session\t" + "\t".join(total_cell_type_counts.index) + "\n")
+        
+        # Write per-session counts
+        for session, counts in cell_type_counts_per_session.items():
+            row_counts = [str(counts.get(cell_type, 0)) for cell_type in total_cell_type_counts.index]
+            f.write(session + "\t" + "\t".join(row_counts) + "\n")
+        
+        # Write total counts
+        f.write("Total Counts\t" + "\t".join(map(str, total_cell_type_counts.values)) + "\n")
+        
+        # Write total fractions
+        f.write("Total Fractions\t" + "\t".join(map(lambda x: f"{x:.4f}", total_fractions.values)) + "\n")
+
+
 
 # Main function
 def main(mouse_name=None,
@@ -232,6 +251,15 @@ def main(mouse_name=None,
             # Generate overall plots            
             plot_cell_type_counts_per_session(cell_type_counts_per_session, os.path.join(save_dir_bar_charts, f"{mouse_name}_cell_types_per_session.png"))
 
+
+            # Inside main function, after generating overall charts
+            save_counts_to_tsv(
+                cell_type_counts_per_session, 
+                total_cell_type_counts, 
+                total_fractions, 
+                os.path.join(save_dir, f"{mouse_name}_cell_type_counts.tsv")
+            )
+        
     except Exception as e:
         print(f"An error occurred: {e}")
 

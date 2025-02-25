@@ -10,7 +10,7 @@ source /home/no1/Documents/code/IlseNeuro/trace_c4/.venv/bin/activate
 DROPBOX_PATH="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder"
 
 # List of mouse folders to process
-MICE=("Yosemite" "Venice" "Seattle" "Quimper" "Orleans" "Newark" "Madrid" "Lisbon" "Lincoln" "Jackson" "Houston" "Ana5" "Ana4" "Ana2" "ReserveMouse3" "Dallas" "Flint" "Greene" "Iowa" "Missouri" "Pittsburg" "Queens" "Reno" "Zachary" "Kyiv" "Istanbul" "Copenhagen" "Rotterdam" "Willemstad" "Zurich" "York" "Xanthi")
+MICE=("Pittsburg" "Queens" "Reno" "Zachary" "Kyiv" "Istanbul" "Copenhagen" "Rotterdam" "Willemstad" "Zurich" "York" "Xanthi" "ReserveMouse3")
 # "Reno" "Amsterdam"
 
 # Function to synchronize (force Dropbox to download the folder)
@@ -18,7 +18,7 @@ sync_folder() {
     local folder="$1"
     local folder_path="$DROPBOX_PATH/$folder"
 
-    mouse_skip_list=("Yosemite" "Venice" "Seattle" "Quimper" "Orleans" "Newark" "Madrid" "Lisbon" "Lincoln" "Jackson" "Houston")
+    mouse_skip_list=("Pittsburg" "Houston" "Yosemite" "Venice" "Seattle" "Quimper" "Orleans" "Newark" "Madrid" "Lisbon" "Jackson")
     # Check if folder is in the skip list
     if [[ " ${mouse_skip_list[@]} " =~ " $folder " ]]; then
         echo "Skipping synchronization for $folder"
@@ -26,13 +26,29 @@ sync_folder() {
     fi
 
     echo "Ensuring $folder is synchronized..."
-    dropbox exclude remove "$folder_path" 
-    
-    sleep 10
+    dropbox exclude add "$folder_path"
+    sleep 5
+    dropbox exclude remove "$folder_path"
+    # Save exclude list to a temporary file
+    dropbox exclude list > exclude_list_tmp.txt
+
+    # Filter for matching folders and save to another temporary file
+    grep "$folder" exclude_list_tmp.txt | grep "$folder/$folder" > filtered_exclude_list.txt
+
+    # Debugging: Check if anything was found
+    cat filtered_exclude_list.txt  # Show what was found before proceeding
+
+    # Remove each matching file from the exclude list
+    while IFS= read -r file; do
+      echo "Folder found: $file"
+      dropbox exclude remove "$file"
+    done < filtered_exclude_list.txt
+
+    sleep 15
     
     # Find all subfolders inside the mouse folder
     find "$folder_path" -mindepth 1 -maxdepth 1 -type d | while read subfolder; do
-        
+
         # Now, find all folders inside each subfolder
         find "$subfolder" -mindepth 1 -maxdepth 1 -type d | while read inner_folder; do
             folder_name=$(basename "$inner_folder")
@@ -44,8 +60,12 @@ sync_folder() {
             if [[ ! " ${specific_folder_names[@]} " =~ " $folder_name " ]]; then
                 echo "Excluding folder: $inner_folder"
                 dropbox exclude add "$inner_folder"
+            else
+                echo "Including folder: $inner_folder"
+                dropbox exclude remove "$inner_folder"
             fi
-        done  
+        done
+
         
         # Look inside each subfolder for Extraction2Bin
         extraction_folder="$subfolder/Extraction2Bin"
@@ -73,11 +93,13 @@ wait_for_sync() {
     local folder="$1"
     local folder_path="$DROPBOX_PATH/$folder"
 
+    folder_to_check="c4"
+
     echo "Checking sync status for: $folder"
     sleep 5
 
     # Collect all subfolder paths that have a "Data" subdirectory
-    mapfile -t data_folders < <(find "$folder_path" -mindepth 1 -maxdepth 1 -type d -exec test -d "{}/Data" \; -print)
+    mapfile -t data_folders < <(find "$folder_path" -mindepth 1 -maxdepth 1 -type d -exec test -d "{}/$folder_to_check" \; -print)
 
     if [[ ${#data_folders[@]} -eq 0 ]]; then
         echo "No valid subfolders found in $folder. Exiting."
@@ -88,7 +110,7 @@ wait_for_sync() {
         all_synced=true  # Assume everything is synced unless proven otherwise
         echo "Waiting for data folders to be synchronized"
         for data_folder in "${data_folders[@]}"; do
-            data_path="$data_folder/Data"
+            data_path="$data_folder/$folder_to_check"
             status=$(dropbox filestatus "$data_path")
 
             if [[ "$status" != *"up to date"* ]]; then
@@ -179,6 +201,23 @@ run_inspect_predicted_cell_types() {
     echo "inspection of cell types complete for $folder."
 }
 
+
+get_discharge_statistics() {
+    local folder="$1"
+    local folder_path="$DROPBOX_PATH/$folder"
+
+    echo "Getting discharge statistics for $folder..."
+
+    /home/no1/Documents/code/IlseNeuro/trace_c4/.venv/bin/python3.10 discharge_statistics.py "$folder"
+
+    if [[ $? -ne 0 ]]; then
+        echo "Error: getting discharge statistics failed for $folder. Exiting."
+        return
+    fi
+
+    echo "getting discharge statistics complete for $folder."
+}
+
 desync_no_longer_needed_folders_inside_c4() {
     local folder="$1"
     local folder_path="$DROPBOX_PATH/$folder"
@@ -208,10 +247,10 @@ desync_no_longer_needed_folders_inside_c4() {
 desync_folder() {
     local folder="$1"
     local folder_path="$DROPBOX_PATH/$folder"
-    mouse_skip_list=("Yosemite" "Venice" "Seattle" "Orleans" "Newark" "Madrid" "Lisbon" "Lincoln" "Jackson" "Houston")
+    mouse_skip_list=("Yosemite" "Venice" "Seattle" "Newark" "Lisbon" "Lincoln" "Jackson")
     # Check if folder is in the skip list
     if [[ " ${mouse_skip_list[@]} " =~ " $folder " ]]; then
-        echo "Skipping synchronization for $folder"
+        echo "Skipping desynchronization for $folder"
         return
     fi
     #echo "Desynchronizing $folder..."
@@ -227,7 +266,7 @@ for MOUSE in "${MICE[@]}"; do
     sync_folder "$MOUSE" || { echo "Failed to sync folder for $MOUSE. Skipping..."; continue; }
 
     # Wait until Dropbox finishes syncing
-    wait_for_sync "$MOUSE"
+    wait_for_sync "$MOUSE" || { echo "Failed wait for sync to finish for $MOUSE. Skipping..."; continue; }
 
     # Process the data using Python
     process_data "$MOUSE" || { echo "Processing failed for $MOUSE. Skipping..."; continue; }
@@ -238,6 +277,8 @@ for MOUSE in "${MICE[@]}"; do
 
     # run_inspect_predicted_cell_types should also be handled safely
     run_inspect_predicted_cell_types "$MOUSE" || { echo "Inspection failed for $MOUSE. Continuing..."; }
+
+    run_get_discharge_statistics "$MOUSE" || { echo "Getting discharge statistics failed for $MOUSE. Continuing..."; }
 
     # Desynchronize after processing
     desync_folder "$MOUSE" || { echo "Failed to desync folder for $MOUSE. Continuing..."; }
