@@ -10,7 +10,7 @@ source /home/no1/Documents/code/IlseNeuro/trace_c4/.venv/bin/activate
 DROPBOX_PATH="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder"
 
 # List of mouse folders to process
-MICE=("Pittsburg" "Queens" "Reno" "Zachary" "Kyiv" "Istanbul" "Copenhagen" "Rotterdam" "Willemstad" "Zurich" "York" "Xanthi" "ReserveMouse3")
+MICE=("Pittsburg" "Queens" "Reno" "Zachary" "Kyiv" "Istanbul" "Copenhagen" "Rotterdam" "Willemstad" "Zurich" "York" "Xanthi")
 # "Reno" "Amsterdam"
 
 # Function to synchronize (force Dropbox to download the folder)
@@ -260,6 +260,41 @@ desync_folder() {
 # Main loop to iterate through all mice
 # Main loop to iterate through all mice
 for MOUSE in "${MICE[@]}"; do
+    echo "Starting process for $MOUSE..."
+
+    # Ensure folder is set to sync
+    sync_folder "$MOUSE" || { echo "Failed to sync folder for $MOUSE. Skipping..."; continue; }
+
+    # Wait until Dropbox finishes syncing
+    wait_for_sync "$MOUSE" || { echo "Failed wait for sync to finish for $MOUSE. Skipping..."; continue; }
+
+    # Process the data using Python
+    process_data "$MOUSE" || { echo "Processing failed for $MOUSE. Skipping..."; continue; }
+
+    desync_no_longer_needed_folders "$MOUSE" || { echo "Failed to desync some folders for $MOUSE. Continuing..."; }
+
+    run_c4 "$MOUSE" || { echo "C4 failed for $MOUSE. Skipping..."; continue; }
+
+    # run_inspect_predicted_cell_types should also be handled safely
+    run_inspect_predicted_cell_types "$MOUSE" || { echo "Inspection failed for $MOUSE. Continuing..."; }
+
+    run_get_discharge_statistics "$MOUSE" || { echo "Getting discharge statistics failed for $MOUSE. Continuing..."; }
+
+    # Desynchronize after processing
+    desync_folder "$MOUSE" || { echo "Failed to desync folder for $MOUSE. Continuing..."; }
+
+    sleep 1800
+
+    echo "Completed processing for $MOUSE."
+    echo "----------------------------------"
+done
+
+
+DROPBOX_PATH="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/ReserveFolder"
+RESERVE_MICE=("ReserveMouse3")
+# Main loop to iterate through all mice
+# Main loop to iterate through all mice
+for MOUSE in "${RESERVE_MICE[@]}"; do
     echo "Starting process for $MOUSE..."
 
     # Ensure folder is set to sync
