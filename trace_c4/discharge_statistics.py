@@ -171,7 +171,7 @@ def get_discharge_statistics(mouse_name, classify_again=True, switch_sessions=Fa
     # Save combined boxplots
     overall_plot = os.path.join(dp_base, f"{mouse_name}_overall_discharge_boxplots.png")
     save_boxplots(all_sessions_data, overall_plot, "Overall Discharge Statistics")
-    
+    return all_sessions_data_stats
     
 def compute_cv(t):
     """
@@ -196,8 +196,8 @@ def main(mouse_name=None, classify_again=True, switch_sessions=True, contaminati
         else:
             print("Error: No mouse name provided")
             sys.exit(1)
-    get_discharge_statistics(mouse_name, classify_again, switch_sessions, contamination_ratio, confidence_ratio_threshold)
-
+    discharge_statistics = get_discharge_statistics(mouse_name, classify_again, switch_sessions, contamination_ratio, confidence_ratio_threshold)
+    return discharge_statistics
 
 if __name__ == "__main__":
     main()

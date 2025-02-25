@@ -12,7 +12,8 @@ import shutil
 import sys
 import re
 import stitch_CH_continuous_files_switch_sessions
-    
+from exceptiongroup import catch
+
 
 def convertOpenEphysDataToContinuous(   mouse_name
                                      ,  switch_sessions=False
@@ -38,10 +39,18 @@ def convertOpenEphysDataToContinuous(   mouse_name
 
         switch_folder = os.path.join(dp_base, "SwitchSessionStitching")
         if os.path.exists(switch_folder):
-            mouse_folders.append(switch_folder)
-            switch_folder_data = os.path.join(switch_folder, "Data")
-            if not os.path.exists(switch_folder_data):
-                stitch_CH_continuous_files_switch_sessions.main(mouse_name)
+
+            switch_folder_data_file = os.path.join(switch_folder, "Data", "100_CH1.continuous")
+            if not os.path.exists(switch_folder_data_file):
+                try:
+                    stitch_CH_continuous_files_switch_sessions.main(mouse_name)
+                    mouse_folders.append(switch_folder)
+                except:
+                    print("Stitching switch-sessions failed. Skipping analysis for switch sessions")
+            else:
+                mouse_folders.append(switch_folder)
+
+
 
                 # Print the list of matching folders
     print(mouse_folders)
