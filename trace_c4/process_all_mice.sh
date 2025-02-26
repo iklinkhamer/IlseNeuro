@@ -26,15 +26,15 @@ DROPBOX_PATH=$(python3.10 -c "from get_dropbox_path import get_dropbox_path; pri
 #DROPBOX_PATH="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder"
 
 # List of mouse folders to process
-MICE=("Zachary" "Kyiv" "Istanbul" "Copenhagen" "Rotterdam" "Willemstad" "Zurich" "Uppsala" "Tallinn" "York" "Xanthi" "Iowa")
-#MICE=("Quimper" "Madrid" "Dallas" "Reno" )
+MICE=("Zachary" "Kyiv" "Istanbul" "Copenhagen" "Rotterdam" "Willemstad" "Zurich" "Uppsala" "Tallinn" "York" "Xanthi" "Iowa" "Ana1" "Ana3")
+#MICE=("Quimper" "Madrid" "Dallas" "Reno" "Ana2" "Ana4" "Ana5")
 # "Reno" "Amsterdam"
 
 # Function to synchronize (force Dropbox to download the folder)
 sync_folder() {
     local folder="$1"
     local folder_path="$DROPBOX_PATH/$folder"
-    mouse_skip_list= ("Zachary")
+    mouse_skip_list=("Zachary")
     #mouse_skip_list=("Iowa" "Quimper" "Pittsburg" "Houston" "Yosemite" "Venice" "Seattle" "Newark" "Lisbon" "Jackson")
     # Check if folder is in the skip list
     if [[ " ${mouse_skip_list[@]} " =~ " $folder " ]]; then
