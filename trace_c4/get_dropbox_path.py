@@ -8,19 +8,23 @@ Created on Wed Feb 26 10:23:55 2025
 
 
 import os
-"""
+
 import socket
 
-HOSTNAME = socket.gethostname()
 
-DROPBOX_ENV = {
-    "sphinx": "/home/no1/Lucas Bayones/BayesLab Dropbox",
-    "hydra": }
-
-DROPBOX_PATH = DROPBOX_ENV[HOSTNAME]
+def get_dropbox_path():
+    HOSTNAME = socket.gethostname()
+    
+    DROPBOX_ENV = {
+        "sphinx": "/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/",
+        "hydra": "/home/devika/BayesLab Dropbox/Julius Koppen/TraceExperiments/"}
+    
+    DROPBOX_PATH = DROPBOX_ENV[HOSTNAME]
+    
+    return DROPBOX_PATH
 """
 def extract_name_from_path(path):
-    """Extract the Dropbox user name from the given path."""
+    #Extract the Dropbox user name from the given path.
     parts = path.split(os.sep)  # Split by folder separator (/)
     
     if "BayesLab Dropbox" in parts and "TraceExperiments" in parts:
@@ -33,7 +37,7 @@ def extract_name_from_path(path):
     return None  # If the pattern isn't found
 
 def get_dropbox_path():
-    """Constructs and returns the corrected Dropbox path."""
+    #Constructs and returns the corrected Dropbox path.
     relative_path = "Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/"
     
     # Construct the full path dynamically
@@ -58,7 +62,7 @@ def get_dropbox_path():
                     return new_path
 
     return None  # Return None if the Dropbox user or path cannot be determined
-
+"""
 # When used as a script, print the path
 if __name__ == "__main__":
     path = get_dropbox_path()
