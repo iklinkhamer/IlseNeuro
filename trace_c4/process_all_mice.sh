@@ -33,8 +33,7 @@ MICE=("Reno" "Zachary" "Kyiv" "Istanbul" "Copenhagen" "Rotterdam" "Willemstad" "
 sync_folder() {
     local folder="$1"
     local folder_path="$DROPBOX_PATH/$folder"
-    echo "Folder path: $folder_path"
-    echo "Dropbox path: $DROPBOX_PATH"
+
     mouse_skip_list=("Reno" "Pittsburg" "Houston" "Yosemite" "Venice" "Seattle" "Quimper" "Orleans" "Newark" "Madrid" "Lisbon" "Jackson")
     # Check if folder is in the skip list
     if [[ " ${mouse_skip_list[@]} " =~ " $folder " ]]; then
@@ -109,7 +108,7 @@ sync_folder() {
 wait_for_sync() {
     local folder="$1"
     local folder_path="$DROPBOX_PATH/$folder"
-    echo "Folder path: $folder_path"
+    #echo "Folder path: $folder_path"
     folder_to_check="c4"
 
     echo "Checking sync status for: $folder"
