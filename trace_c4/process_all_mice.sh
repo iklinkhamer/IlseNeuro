@@ -4,7 +4,21 @@
 # cd Documents/code/IlseNeuro/trace_c4
 # bash process_all_mice.sh
 
-source /home/no1/Documents/code/IlseNeuro/trace_c4/.venv/bin/activate  
+
+case "$(hostname)" in
+      "sphinx")
+          source /home/no1/Documents/code/IlseNeuro/trace_c4/.venv/bin/activate
+          # Add commands specific to Sphinx here
+          ;;
+      "hydra")
+          source /home/devika/Documents/code/IlseNeuro/trace_c4/.venv/bin/activate
+          # Add commands specific to Hydra here
+          ;;
+      *)
+          echo "Unknown host: $(hostname)"
+          # Add default commands here
+          ;;
+esac
 
 DROPBOX_PATH=$(python3 -c "from get_dropbox_path import get_dropbox_path; print(get_dropbox_path() + '/ExperimentOutput/Ephys4Trace1/MainFolder')")
 
