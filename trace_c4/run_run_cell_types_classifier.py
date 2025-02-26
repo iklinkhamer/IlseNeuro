@@ -54,7 +54,7 @@ def run_cell_types_classifier_wrapper(mouse_name
         dp = path.join(dp_base, sess_oebin, phy_folder)
         cla_res_path = path.join(dp_base, sess_oebin, phy_folder, "cell_type_classification")
         save_path = os.path.join(dp, f"c4_results_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}")
-        os.makedirs(save_path, exist_ok=True)
+
 
         if not os.path.exists(dp):
             print(f"Folder {dp} does not exist, skipping.")
@@ -68,6 +68,7 @@ def run_cell_types_classifier_wrapper(mouse_name
         if not classify_again and os.path.exists(save_path):
             print(f"Session {dp} has already been classified and classify again is false, skipping.")
             continue
+        os.makedirs(save_path, exist_ok=True)
 
 
 
@@ -77,7 +78,7 @@ def run_cell_types_classifier_wrapper(mouse_name
         #run_cell_types_classifier(dp, raise_error=True)
 
 
-def main(mouse_name=None, classify_again=False, switch_sessions=True, contamination_ratio=0.1, confidence_ratio_threshold=1.5):
+def main(mouse_name=None, classify_again=True, switch_sessions=True, contamination_ratio=0.1, confidence_ratio_threshold=1.5):
     if mouse_name is None:
         if len(sys.argv) > 1:
             mouse_name = sys.argv[1]

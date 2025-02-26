@@ -102,7 +102,7 @@ def save_boxplots(all_sessions_data, save_path, title, show_outliers=False):
 
 
 
-def get_discharge_statistics(mouse_name, classify_again=True, switch_sessions=False, contamination_ratio=0.1, confidence_ratio_threshold=2, directory="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/", skip_without_continuous=True):
+def get_discharge_statistics(mouse_name, switch_sessions=False, contamination_ratio=0.1, confidence_ratio_threshold=2, directory="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/", skip_without_continuous=True):
     dp_base = os.path.join(directory, mouse_name)
     if "ReserveMouse" in mouse_name:
         dp_base = dp_base.replace("MainFolder", "ReserveFolder")
@@ -189,14 +189,14 @@ def compute_cv(t):
     isis = np.diff(t)  # Compute interspike intervals
     return np.std(isis) / np.mean(isis)  # CV formula
     
-def main(mouse_name=None, classify_again=True, switch_sessions=True, contamination_ratio=0.1, confidence_ratio_threshold=1.5):
+def main(mouse_name=None, switch_sessions=True, contamination_ratio=0.1, confidence_ratio_threshold=1.5):
     if mouse_name is None:
         if len(sys.argv) > 1:
             mouse_name = sys.argv[1]
         else:
             print("Error: No mouse name provided")
             sys.exit(1)
-    discharge_statistics = get_discharge_statistics(mouse_name, classify_again, switch_sessions, contamination_ratio, confidence_ratio_threshold)
+    discharge_statistics = get_discharge_statistics(mouse_name, switch_sessions, contamination_ratio, confidence_ratio_threshold)
     return discharge_statistics
 
 if __name__ == "__main__":
