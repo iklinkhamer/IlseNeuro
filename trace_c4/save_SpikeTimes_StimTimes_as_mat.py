@@ -24,7 +24,7 @@ def load_and_save_as_mat(   spike_file
     savemat(os.path.join(destination_folder, 'stim_times_mat.mat'), {'event_times': event_times})
 
 def main(   mouse_name="Venice"
-         ,  directory=os.path.join(get_dropbox_path(),"/ExperimentOutput/Ephys4Trace1/MainFolder/")
+         ,  directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
          ,  extraction_folder="Extraction2Bin"
          ,  spike_file_name="spike_times.npy"
          ,  stim_file_name="EventStamps.mat"

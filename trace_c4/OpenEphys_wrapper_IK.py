@@ -19,7 +19,7 @@ from get_dropbox_path import get_dropbox_path
 def convertOpenEphysDataToContinuous(   mouse_name
                                      ,  switch_sessions=False
                                      ,  channels=list(range(1,33))
-                                     ,  directory=os.path.join(get_dropbox_path(),"/ExperimentOutput/Ephys4Trace1/MainFolder/")
+                                     ,  directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
                                      ):
 
     dp_base = os.path.join(directory, mouse_name)

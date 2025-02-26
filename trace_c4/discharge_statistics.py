@@ -103,7 +103,7 @@ def save_boxplots(all_sessions_data, save_path, title, show_outliers=False):
 
 
 
-def get_discharge_statistics(mouse_name, switch_sessions=False, contamination_ratio=0.1, confidence_ratio_threshold=2, directory=os.path.join(get_dropbox_path(),"/ExperimentOutput/Ephys4Trace1/MainFolder/"), skip_without_continuous=True):
+def get_discharge_statistics(mouse_name, switch_sessions=False, contamination_ratio=0.1, confidence_ratio_threshold=2, directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/"), skip_without_continuous=True):
     
     dp_base = os.path.join(directory, mouse_name)
     if "ReserveMouse" in mouse_name:

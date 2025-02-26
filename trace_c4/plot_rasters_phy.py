@@ -69,7 +69,7 @@ def load_and_align_spikes(spike_file, event_file, cluster_file, session_file, pr
 
 def main():
     mouse_session = "Venice_20240523111730"
-    directory=os.path.join(get_dropbox_path(),"/ExperimentOutput/Ephys4Trace1/MainFolder/", "Venice/Venice_20240523111730/Extraction2Bin/")
+    directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/", "Venice/Venice_20240523111730/Extraction2Bin/")
     spike_file = f'{directory}spike_times.npy'
     event_file = f'{directory}EventStamps.mat'
     cluster_file = f'{directory}spike_clusters.npy'

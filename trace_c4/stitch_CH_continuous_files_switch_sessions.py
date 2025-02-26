@@ -68,7 +68,7 @@ def read_folders_from_file(mouse_name
 
 
 def main(mouse_name="Orleans"
-         , directory=os.path.join(get_dropbox_path(),"/ExperimentOutput/Ephys4Trace1/MainFolder/") 
+         , directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/") 
          , switch_folder_name="SwitchSessionStitching"
          , data_folder_name="Data"
          , output_folder_name="c4/continuous/Data_AP_LFP"

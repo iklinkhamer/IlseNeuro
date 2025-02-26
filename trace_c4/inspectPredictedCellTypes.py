@@ -139,11 +139,12 @@ def save_counts_to_tsv(cell_type_counts_per_session, total_cell_type_counts, tot
 
 
 # Main function
-def main(mouse_name=None,
+def main(mouse_name="Seattle",
          general_results=False,
-         directory=os.path.join(get_dropbox_path(),"/ExperimentOutput/Ephys4Trace1/MainFolder/"),
-         save_dir=os.path.join(get_dropbox_path(), "/AnalysisOutput/Cell_type_counts/"),
+         directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/"),
+         save_dir=os.path.join(get_dropbox_path(), "AnalysisOutput/Cell_type_counts/"),
          switch_sessions=False):
+    
     
     
     if not general_results:
