@@ -6,8 +6,10 @@
 
 source /home/no1/Documents/code/IlseNeuro/trace_c4/.venv/bin/activate  
 
+DROPBOX_PATH=$(python3 -c "from get_dropbox_path import get_dropbox_path; print(get_dropbox_path() + '/ExperimentOutput/Ephys4Trace1/MainFolder')")
+
 # Define the Dropbox path
-DROPBOX_PATH="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder"
+#DROPBOX_PATH="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder"
 
 # List of mouse folders to process
 MICE=("Reno" "Zachary" "Kyiv" "Istanbul" "Copenhagen" "Rotterdam" "Willemstad" "Zurich" "Uppsala" "York" "Xanthi")
@@ -289,8 +291,9 @@ for MOUSE in "${MICE[@]}"; do
     echo "----------------------------------"
 done
 
+DROPBOX_PATH=$(python3 -c "from get_dropbox_path import get_dropbox_path; print(get_dropbox_path() + '/ExperimentOutput/Ephys4Trace1/ReserveFolder')")
 
-DROPBOX_PATH="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/ReserveFolder"
+#DROPBOX_PATH="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/ReserveFolder"
 RESERVE_MICE=("ReserveMouse3")
 # Main loop to iterate through all mice
 # Main loop to iterate through all mice

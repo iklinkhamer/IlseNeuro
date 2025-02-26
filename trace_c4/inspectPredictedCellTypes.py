@@ -10,7 +10,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
-
+from get_dropbox_path import get_dropbox_path
 # Load the .tsv file
 def load_tsv(file_path):
     """Load the TSV file and return it as a DataFrame."""
@@ -141,9 +141,10 @@ def save_counts_to_tsv(cell_type_counts_per_session, total_cell_type_counts, tot
 # Main function
 def main(mouse_name=None,
          general_results=False,
-         directory="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/",
-         save_dir="/home/no1/Documents/c4_neurons_temp_output/cell_type_classification_results",
+         directory=os.path.join(get_dropbox_path(),"/ExperimentOutput/Ephys4Trace1/MainFolder/"),
+         save_dir=os.path.join(get_dropbox_path(), "/AnalysisOutput/Cell_type_counts/"),
          switch_sessions=False):
+    
     
     if not general_results:
         save_dir = os.path.join(save_dir,"fnfpThreshold_0.1_confidenceRatio_1.5")

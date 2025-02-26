@@ -12,6 +12,7 @@ import pandas as pd
 import os
 from scipy.io import loadmat
 from pathlib import Path
+from get_dropbox_path import get_dropbox_path
 
 def plot_trial_spikes(trial, spike_times, y=None, ax=None, annotation_fields=None, spike_height=None):
     if y is None:
@@ -68,7 +69,7 @@ def load_and_align_spikes(spike_file, event_file, cluster_file, session_file, pr
 
 def main():
     mouse_session = "Venice_20240523111730"
-    directory = "/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/Venice/Venice_20240523111730/Extraction2Bin/"
+    directory=os.path.join(get_dropbox_path(),"/ExperimentOutput/Ephys4Trace1/MainFolder/", "Venice/Venice_20240523111730/Extraction2Bin/")
     spike_file = f'{directory}spike_times.npy'
     event_file = f'{directory}EventStamps.mat'
     cluster_file = f'{directory}spike_clusters.npy'

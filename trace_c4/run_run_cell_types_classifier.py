@@ -7,7 +7,7 @@ from matplotlib import font_manager
 import npyx
 font_path = '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf' # Path to the Arial font file (adjust the path based on your system)
 font_manager.fontManager.addfont(font_path) # Add the font to Matplotlib's font manager
-
+from get_dropbox_path import get_dropbox_path
 from npyx.c4.predict_cell_types import run_cell_types_classifier
 from os import path
 import os
@@ -17,7 +17,7 @@ def run_cell_types_classifier_wrapper(mouse_name
                                       ,switch_sessions=False
                                       ,contamination_ratio=0.1
                                       ,confidence_ratio_threshold=2
-                                      ,directory="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/"
+                                      ,directory=os.path.join(get_dropbox_path(),"/ExperimentOutput/Ephys4Trace1/MainFolder/")
                                       ,skip_without_continuous=True):
 
 

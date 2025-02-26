@@ -13,12 +13,13 @@ import sys
 import re
 import stitch_CH_continuous_files_switch_sessions
 from exceptiongroup import catch
+from get_dropbox_path import get_dropbox_path
 
 
 def convertOpenEphysDataToContinuous(   mouse_name
                                      ,  switch_sessions=False
                                      ,  channels=list(range(1,33))
-                                     ,  directory="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/"
+                                     ,  directory=os.path.join(get_dropbox_path(),"/ExperimentOutput/Ephys4Trace1/MainFolder/")
                                      ):
 
     dp_base = os.path.join(directory, mouse_name)

@@ -8,6 +8,7 @@ Created on Tue Feb 18 12:18:59 2025
 
 import os
 import re
+from get_dropbox_path import get_dropbox_path
 
 def read_continuous_file(filename, skip_header=False, data_folder="Data"):
     
@@ -67,7 +68,7 @@ def read_folders_from_file(mouse_name
 
 
 def main(mouse_name="Orleans"
-         , directory="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/" 
+         , directory=os.path.join(get_dropbox_path(),"/ExperimentOutput/Ephys4Trace1/MainFolder/") 
          , switch_folder_name="SwitchSessionStitching"
          , data_folder_name="Data"
          , output_folder_name="c4/continuous/Data_AP_LFP"
