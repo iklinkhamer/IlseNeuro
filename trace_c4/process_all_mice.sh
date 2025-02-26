@@ -34,7 +34,7 @@ sync_folder() {
     local folder="$1"
     local folder_path="$DROPBOX_PATH/$folder"
 
-    mouse_skip_list=("Reno" "Pittsburg" "Houston" "Yosemite" "Venice" "Seattle" "Quimper" "Orleans" "Newark" "Madrid" "Lisbon" "Jackson")
+    mouse_skip_list=("Pittsburg" "Houston" "Yosemite" "Venice" "Seattle" "Newark" "Lisbon" "Jackson")
     # Check if folder is in the skip list
     if [[ " ${mouse_skip_list[@]} " =~ " $folder " ]]; then
         echo "Skipping synchronization for $folder"
@@ -254,7 +254,7 @@ run_inspect_predicted_cell_types() {
 
     if [[ $? -ne 0 ]]; then
         echo "Error: inspecting cell types failed for $folder. Exiting."
-        return
+        return 1
     fi
 
     echo "inspection of cell types complete for $folder."
@@ -286,7 +286,7 @@ get_discharge_statistics() {
 
     if [[ $? -ne 0 ]]; then
         echo "Error: getting discharge statistics failed for $folder. Exiting."
-        return
+        return 1
     fi
 
     echo "getting discharge statistics complete for $folder."
