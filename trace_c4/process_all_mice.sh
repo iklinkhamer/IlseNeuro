@@ -20,7 +20,7 @@ case "$(hostname)" in
           ;;
 esac
 
-DROPBOX_PATH=$(python3 -c "from get_dropbox_path import get_dropbox_path; print(get_dropbox_path() + '/ExperimentOutput/Ephys4Trace1/MainFolder')")
+DROPBOX_PATH=$(python3.10 -c "from get_dropbox_path import get_dropbox_path; print(get_dropbox_path() + '/ExperimentOutput/Ephys4Trace1/MainFolder')")
 
 # Define the Dropbox path
 #DROPBOX_PATH="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder"
@@ -34,6 +34,7 @@ sync_folder() {
     local folder="$1"
     local folder_path="$DROPBOX_PATH/$folder"
     echo "Folder path: $folder_path"
+    echo "Dropbox path: $DROPBOX_PATH"
     mouse_skip_list=("Pittsburg" "Houston" "Yosemite" "Venice" "Seattle" "Quimper" "Orleans" "Newark" "Madrid" "Lisbon" "Jackson")
     # Check if folder is in the skip list
     if [[ " ${mouse_skip_list[@]} " =~ " $folder " ]]; then
@@ -363,7 +364,7 @@ for MOUSE in "${MICE[@]}"; do
     echo "----------------------------------"
 done
 
-DROPBOX_PATH=$(python3 -c "from get_dropbox_path import get_dropbox_path; print(get_dropbox_path() + '/ExperimentOutput/Ephys4Trace1/ReserveFolder')")
+DROPBOX_PATH=$(python3.10 -c "from get_dropbox_path import get_dropbox_path; print(get_dropbox_path() + '/ExperimentOutput/Ephys4Trace1/ReserveFolder')")
 
 #DROPBOX_PATH="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/ReserveFolder"
 RESERVE_MICE=("ReserveMouse3")
