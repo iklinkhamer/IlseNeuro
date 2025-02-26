@@ -1,12 +1,22 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Nov 26 10:23:55 2024
+
+@author: Ilse Klinkhamer
+"""
+
+"""
 #from npyx.testing import test_npyx
-import sys
 #sys.path.insert(0, '/home/no1/anaconda3/envs/new_env/lib/python3.10/site-packages')  # Ensure this is the correct path to 'new_env'
 #sys.path.insert(0, '/home/no1/anaconda3/envs/new_env/lib/python3.10/site-packages/npyx')  # Add npyx explicitly if needed
-
-from matplotlib import font_manager
-import npyx
 font_path = '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf' # Path to the Arial font file (adjust the path based on your system)
 font_manager.fontManager.addfont(font_path) # Add the font to Matplotlib's font manager
+"""
+
+import sys
+import npyx
+
 from get_dropbox_path import get_dropbox_path
 from npyx.c4.predict_cell_types import run_cell_types_classifier
 from os import path

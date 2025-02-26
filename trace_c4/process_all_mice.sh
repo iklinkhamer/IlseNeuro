@@ -35,7 +35,7 @@ sync_folder() {
     local folder_path="$DROPBOX_PATH/$folder"
     echo "Folder path: $folder_path"
     echo "Dropbox path: $DROPBOX_PATH"
-    mouse_skip_list=("Pittsburg" "Houston" "Yosemite" "Venice" "Seattle" "Quimper" "Orleans" "Newark" "Madrid" "Lisbon" "Jackson")
+    mouse_skip_list=("Reno" "Pittsburg" "Houston" "Yosemite" "Venice" "Seattle" "Quimper" "Orleans" "Newark" "Madrid" "Lisbon" "Jackson")
     # Check if folder is in the skip list
     if [[ " ${mouse_skip_list[@]} " =~ " $folder " ]]; then
         echo "Skipping synchronization for $folder"
@@ -168,7 +168,7 @@ process_data() {
     
     if [[ $? -ne 0 ]]; then
         echo "Error: Data processing failed for $folder. Exiting."
-        exit 1
+        return 1
     fi
 
     echo "Processing complete for $folder."
