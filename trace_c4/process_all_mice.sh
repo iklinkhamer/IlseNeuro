@@ -134,8 +134,22 @@ wait_for_sync() {
 process_data() {
     local folder="$1"
     echo "Processing data for $folder..."
-    
-    /home/no1/Documents/code/IlseNeuro/trace_c4/.venv/bin/python3.10 OpenEphys_wrapper_IK.py "$folder"
+
+    case "$(hostname)" in
+      "sphinx")
+          /home/no1/Documents/code/IlseNeuro/trace_c4/.venv/bin/python3.10 OpenEphys_wrapper_IK.py "$folder"
+          # Add commands specific to Sphinx here
+          ;;
+      "hydra")
+          /home/devika/Documents/code/IlseNeuro/trace_c4/.venv/bin/python3.10 OpenEphys_wrapper_IK.py "$folder"
+          # Add commands specific to Hydra here
+          ;;
+      *)
+          echo "Unknown host: $(hostname)"
+          # Add default commands here
+          ;;
+    esac
+
     
     if [[ $? -ne 0 ]]; then
         echo "Error: Data processing failed for $folder. Exiting."
@@ -176,8 +190,23 @@ run_c4() {
     local folder_path="$DROPBOX_PATH/$folder"
 
     echo "Running c4 for $folder..."
-    
-    /home/no1/Documents/code/IlseNeuro/trace_c4/.venv/bin/python3.10 run_run_cell_types_classifier.py "$folder"
+
+    case "$(hostname)" in
+      "sphinx")
+          /home/no1/Documents/code/IlseNeuro/trace_c4/.venv/bin/python3.10 run_run_cell_types_classifier.py "$folder"
+
+          # Add commands specific to Sphinx here
+          ;;
+      "hydra")
+          /home/devika/Documents/code/IlseNeuro/trace_c4/.venv/bin/python3.10 run_run_cell_types_classifier.py "$folder"
+          # Add commands specific to Hydra here
+          ;;
+      *)
+          echo "Unknown host: $(hostname)"
+          # Add default commands here
+          ;;
+    esac
+
 
     if [[ $? -ne 0 ]]; then
         echo "Error: c4 processing failed for $folder. Exiting."
@@ -192,8 +221,22 @@ run_inspect_predicted_cell_types() {
     local folder_path="$DROPBOX_PATH/$folder"
 
     echo "Inspecting predicted cell types for $folder..."
+    case "$(hostname)" in
+      "sphinx")
+          /home/no1/Documents/code/IlseNeuro/trace_c4/.venv/bin/python3.10 inspectPredictedCellTypes.py "$folder"
 
-    /home/no1/Documents/code/IlseNeuro/trace_c4/.venv/bin/python3.10 inspectPredictedCellTypes.py "$folder"
+          # Add commands specific to Sphinx here
+          ;;
+      "hydra")
+          /home/devika/Documents/code/IlseNeuro/trace_c4/.venv/bin/python3.10 inspectPredictedCellTypes.py "$folder"
+          # Add commands specific to Hydra here
+          ;;
+      *)
+          echo "Unknown host: $(hostname)"
+          # Add default commands here
+          ;;
+    esac
+
 
     if [[ $? -ne 0 ]]; then
         echo "Error: inspecting cell types failed for $folder. Exiting."
@@ -210,7 +253,22 @@ get_discharge_statistics() {
 
     echo "Getting discharge statistics for $folder..."
 
-    /home/no1/Documents/code/IlseNeuro/trace_c4/.venv/bin/python3.10 discharge_statistics.py "$folder"
+    case "$(hostname)" in
+      "sphinx")
+          /home/no1/Documents/code/IlseNeuro/trace_c4/.venv/bin/python3.10 discharge_statistics.py "$folder"
+
+          # Add commands specific to Sphinx here
+          ;;
+      "hydra")
+          /home/devika/Documents/code/IlseNeuro/trace_c4/.venv/bin/python3.10 discharge_statistics.py "$folder"
+          # Add commands specific to Hydra here
+          ;;
+      *)
+          echo "Unknown host: $(hostname)"
+          # Add default commands here
+          ;;
+    esac
+
 
     if [[ $? -ne 0 ]]; then
         echo "Error: getting discharge statistics failed for $folder. Exiting."
