@@ -17,7 +17,7 @@ def get_mouse_groups():
     return {
         "Switch": [
             "ReserveMouse3", "Dallas", "Flint", "Greene", "Houston", "Iowa", "Jackson",
-            "Lincoln", "Newark", "Missouri?", "Pittsburg", "Queens?", "Orleans"
+            "Lincoln", "Newark", "Missouri", "Pittsburg", "Queens", "Orleans"
         ],
         "WideExperts": ["Reno", "Seattle", "Yosemite", "Zachary", "Kyiv", "Istanbul", "Copenhagen"],
         "Narrow": ["Rotterdam", "Tallinn", "Quimper", "Porto", "Lisbon", "Madrid"],
@@ -151,3 +151,5 @@ def main():
     
 if __name__ == "__main__":
     main()
+
+
