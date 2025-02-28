@@ -191,7 +191,7 @@ def compute_cv(t):
     isis = np.diff(t)  # Compute interspike intervals
     return np.std(isis) / np.mean(isis)  # CV formula
     
-def main(mouse_name=None, switch_sessions=True, contamination_ratio=0.1, confidence_ratio_threshold=1.5):
+def main(mouse_name="Zurich", switch_sessions=True, contamination_ratio=0.1, confidence_ratio_threshold=1.5):
     if mouse_name is None:
         if len(sys.argv) > 1:
             mouse_name = sys.argv[1]

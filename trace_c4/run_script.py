@@ -10,6 +10,7 @@ import OpenEphys_wrapper_IK
 import run_run_cell_types_classifier
 import stitch_CH_continuous_files_switch_sessions
 import inspectPredictedCellTypes
+import discharge_statistics
 import time
 import os
 
@@ -19,7 +20,7 @@ folder_name = "SwitchSessionStitching/c4/c4_results_fpfnThreshold_0.1_confidence
 runSwitchSessionsPipeline=False
 switch_sessions = True
 classify_again = True
-mouse_names = ["Iowa"]
+mouse_names = ["Zachary", "Zurich"]
 
 for mouse_name in mouse_names:
     if runSwitchSessionsPipeline:
@@ -52,4 +53,5 @@ for mouse_name in mouse_names:
     else:
         #OpenEphys_wrapper_IK.main(mouse_name, switch_sessions=switch_sessions)
         run_run_cell_types_classifier.main(mouse_name, classify_again=classify_again, switch_sessions=switch_sessions, contamination_ratio=0.1, confidence_ratio_threshold=1.5)
-        #inspectPredictedCellTypes.main(mouse_name, general_results=False)
+        inspectPredictedCellTypes.main(mouse_name, general_results=False)
+        discharge_statistics.main(mouse_name, switch_sessions=switch_sessions, contamination_ratio=0.1, confidence_ratio_threshold=1.5)
