@@ -40,16 +40,20 @@ def convertOpenEphysDataToContinuous(   mouse_name
 
         switch_folder = os.path.join(dp_base, "SwitchSessionStitching")
         if os.path.exists(switch_folder):
+            continuous_switch_file = os.path.join(switch_folder, "continuous.dat")
 
-            switch_folder_data_file = os.path.join(switch_folder, "Data", "100_CH1.continuous")
-            if not os.path.exists(switch_folder_data_file):
-                try:
-                    stitch_CH_continuous_files_switch_sessions.main(mouse_name)
-                    mouse_folders.append(switch_folder)
-                except:
-                    print("Stitching switch-sessions failed. Skipping analysis for switch sessions")
-            else:
+            if os.path.exists(continuous_switch_file):
                 mouse_folders.append(switch_folder)
+            else:
+                switch_folder_data_file = os.path.join(switch_folder, "Data", "100_CH1.continuous")
+                if not os.path.exists(switch_folder_data_file):
+                    try:
+                        stitch_CH_continuous_files_switch_sessions.main(mouse_name)
+                        mouse_folders.append(switch_folder)
+                    except:
+                        print("Stitching switch-sessions failed. Skipping analysis for switch sessions")
+                else:
+                    mouse_folders.append(switch_folder)
 
 
 
