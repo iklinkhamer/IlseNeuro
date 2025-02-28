@@ -19,8 +19,8 @@ folder_name = "SwitchSessionStitching/c4/c4_results_fpfnThreshold_0.1_confidence
 
 runSwitchSessionsPipeline=False
 switch_sessions = True
-classify_again = True
-mouse_names = ["Zachary", "Zurich"]
+classify_again = False
+mouse_names = ["Zurich"]
 
 for mouse_name in mouse_names:
     if runSwitchSessionsPipeline:

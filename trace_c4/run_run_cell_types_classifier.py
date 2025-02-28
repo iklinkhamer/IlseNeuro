@@ -67,16 +67,16 @@ def run_cell_types_classifier_wrapper(mouse_name
 
 
         if not os.path.exists(dp):
-            print(f"Folder {dp} does not exist, skipping.")
+            print(f"Folder {dp} does not exist, skipping c4 analysis.")
             continue  # Skip to the next iteration if the folder doesn't exist
         if not os.path.exists(f"{dp}/params.py"):
-            print(f"params.py folder not found in folder {sess_oebin}, skipping...")
+            print(f"params.py folder not found in folder {sess_oebin}, skipping c4 analysis...")
             continue
         if not os.path.exists(f"{dp}/continuous/Data_AP_LFP/continuous.dat") and skip_without_continuous:
-            print(f"continuous.dat file not found, skipping")
+            print(f"continuous.dat file not found, skipping c4 analysis")
             continue
         if not classify_again and os.path.exists(save_path):
-            print(f"Session {dp} has already been classified and classify again is false, skipping.")
+            print(f"Session {dp} has already been classified and classify again is false, skipping c4 analysis.")
             continue
         os.makedirs(save_path, exist_ok=True)
 

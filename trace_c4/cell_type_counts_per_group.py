@@ -92,14 +92,14 @@ def plot_per_mouse_group_bar_chart(total_counts_per_mouse, save_path):
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
     plt.close()
 
-def main():
+def main(contamination_ratio=0.1, confidence_ratio_threshold=2):
     dropbox_path = get_dropbox_path()
     print(dropbox_path)
     #folder_inside_dropbox = "ExperimentOutput/Ephys4Trace1/MainFolder/"
     
-    counts_folder = os.path.join(dropbox_path, "AnalysisOutput/Cell_type_counts/fnfpThreshold_0.1_confidenceRatio_1.5/")
+    counts_folder = os.path.join(dropbox_path, f"AnalysisOutput/Cell_type_counts/fnfpThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}/")
     
-    counts_file = "_cell_type_counts.tsv"
+
     mice_groups = get_mouse_groups()
     
     mice_to_analyze = {group: [] for group in mice_groups}
@@ -107,6 +107,12 @@ def main():
     # Check file existence
     for group, mice in mice_groups.items():
         for mouse in mice:
+            counts_file_new = f"_cell_type_counts_fnfpThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.tsv"
+            if os.path.exists(os.path.join(counts_folder, f"{mouse}{counts_file_new}")):
+                counts_file = f"_cell_type_counts_fnfpThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.tsv"
+            else:
+                counts_file = "_cell_type_counts.tsv"
+                
             file_path = os.path.join(counts_folder, f"{mouse}{counts_file}")
             if os.path.isfile(file_path):
                 mice_to_analyze[group].append(mouse)
@@ -138,13 +144,13 @@ def main():
     results_df = results_df.fillna(0).astype(int)
 
     # Save to file in counts_folder
-    output_file = os.path.join(counts_folder, "cell_type_totals.tsv")
+    output_file = os.path.join(counts_folder, f"all_cell_type_totals_fnfpThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.tsv")
     results_df.to_csv(output_file, sep='\t')
     print(f"Saved cell type totals to {output_file}")
     
     # Generate and save plots
-    pie_chart_path = os.path.join(counts_folder, "all_groups_pie_chart.png")
-    bar_chart_path = os.path.join(counts_folder, "all_groups_bar_chart.png")
+    pie_chart_path = os.path.join(counts_folder, f"all_groups_pie_chart_fnfpThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.png")
+    bar_chart_path = os.path.join(counts_folder, f"all_groups_bar_chart_fnfpThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.png")
     
     plot_pie_charts(results_df, pie_chart_path)
     plot_grouped_bar_chart(results_df, bar_chart_path)
@@ -152,7 +158,7 @@ def main():
     print(f"Saved pie chart to {pie_chart_path}")
     print(f"Saved bar chart to {bar_chart_path}")
 
-    per_mouse_chart_path = os.path.join(counts_folder, "per_mouse_group_bar_chart.png")
+    per_mouse_chart_path = os.path.join(counts_folder, f"per_mouse_group_bar_chart_fnfpThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.png")
     plot_per_mouse_group_bar_chart(total_counts_per_mouse, per_mouse_chart_path)
     print(f"Saved per-mouse-group bar chart to {per_mouse_chart_path}")
     

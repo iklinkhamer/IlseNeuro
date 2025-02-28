@@ -141,6 +141,8 @@ def save_counts_to_tsv(cell_type_counts_per_session, total_cell_type_counts, tot
 # Main function
 def main(mouse_name=None,
          general_results=False,
+         contamination_ratio=0.1,
+         confidence_ratio_threshold=1.5,
          directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/"),
          save_dir=os.path.join(get_dropbox_path(), "AnalysisOutput/Cell_type_counts/"),
          switch_sessions=False):
@@ -148,7 +150,7 @@ def main(mouse_name=None,
     
     
     if not general_results:
-        save_dir = os.path.join(save_dir,"fnfpThreshold_0.1_confidenceRatio_1.5")
+        save_dir = os.path.join(save_dir,f"fnfpThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}")
         os.makedirs(save_dir, exist_ok=True)
     
     if mouse_name is None:
@@ -199,19 +201,27 @@ def main(mouse_name=None,
                 continue
             
             tsv_files = [f for f in os.listdir(folder_path) if f == 'cluster_predicted_cell_type.tsv']
+            confidence_ratio_files = [f for f in os.listdir(folder_path) if f == 'cluster_confidence_ratio.tsv']
+            
+            for tsv_file, confidence_ratio_file in zip(tsv_files, confidence_ratio_files):
 
-            for tsv_file in tsv_files:
                 file_path = os.path.join(folder_path, tsv_file)
                 print(f"Processing file: {file_path}")
 
                 # Load data
                 data = load_tsv(file_path)
+                confidence_ratios = load_tsv(os.path.join(folder_path, confidence_ratio_file))
 
                 # Ensure necessary columns exist
                 required_columns = ['cluster_id', 'predicted_cell_type']
                 if not all(col in data.columns for col in required_columns):
                     print(f"Skipping file {file_path}: Missing required columns.")
                     continue
+                
+                # Filter data where confidence ratio for each cluster_id is above the threshold
+                if 'cluster_id' in confidence_ratios.columns and 'confidence_ratio' in confidence_ratios.columns:
+                    valid_clusters = confidence_ratios[confidence_ratios['confidence_ratio'] > confidence_ratio_threshold]['cluster_id']
+                    data = data[data['cluster_id'].isin(valid_clusters)]
 
                 # Compute counts and fractions
                 cell_type_counts, fractions = compute_fractions(data, 'predicted_cell_type')
@@ -232,8 +242,8 @@ def main(mouse_name=None,
                 
 
                 # Save paths
-                save_path_pie_charts = os.path.join(save_dir_pie_charts, f"{folder}_cell_type_distribution.png")
-                save_path_bar_charts = os.path.join(save_dir_bar_charts, f"{folder}_cell_type_counts.png")
+                save_path_pie_charts = os.path.join(save_dir_pie_charts, f"{folder}_cell_type_distribution_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.png")
+                save_path_bar_charts = os.path.join(save_dir_bar_charts, f"{folder}_cell_type_counts_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.png")
 
                 # Generate and save plots
                 plot_pie_chart(filtered_counts, filtered_fractions, save_path_pie_charts, title=f"Cell Type Distribution for {folder}")
@@ -243,16 +253,16 @@ def main(mouse_name=None,
         if not total_cell_type_counts.empty:
             total_fractions = total_cell_type_counts / total_cell_type_counts.sum()
 
-            overall_pie_chart_path = os.path.join(save_dir_pie_charts, f"{mouse_name}_overall_cell_type_distribution.png")
-            overall_bar_chart_path = os.path.join(save_dir_bar_charts, f"{mouse_name}_overall_cell_type_counts.png")
-            total_neurons_chart_path = os.path.join(save_dir_bar_charts, f"{mouse_name}_total_neurons_per_session.png")
+            overall_pie_chart_path = os.path.join(save_dir_pie_charts, f"{mouse_name}_overall_cell_type_distribution_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.png")
+            overall_bar_chart_path = os.path.join(save_dir_bar_charts, f"{mouse_name}_overall_cell_type_counts_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.png")
+            total_neurons_chart_path = os.path.join(save_dir_bar_charts, f"{mouse_name}_total_neurons_per_session_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.png")
 
             plot_pie_chart(total_cell_type_counts, total_fractions, overall_pie_chart_path, title=f"Overall Cell Type Distribution for {mouse_name}")
             plot_bar_chart(total_cell_type_counts, overall_bar_chart_path, title=f"Overall Neuron Counts per Cell Type in {mouse_name}")
             plot_total_neurons_per_session(total_neurons_per_session, total_neurons_chart_path)
             
             # Generate overall plots            
-            plot_cell_type_counts_per_session(cell_type_counts_per_session, os.path.join(save_dir_bar_charts, f"{mouse_name}_cell_types_per_session.png"))
+            plot_cell_type_counts_per_session(cell_type_counts_per_session, os.path.join(save_dir_bar_charts, f"{mouse_name}_cell_types_per_session_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.png"))
 
 
             # Inside main function, after generating overall charts
@@ -260,7 +270,7 @@ def main(mouse_name=None,
                 cell_type_counts_per_session, 
                 total_cell_type_counts, 
                 total_fractions, 
-                os.path.join(save_dir, f"{mouse_name}_cell_type_counts.tsv")
+                os.path.join(save_dir, f"{mouse_name}_cell_type_counts_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.tsv")
             )
         
     except Exception as e:

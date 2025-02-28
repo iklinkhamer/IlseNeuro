@@ -160,9 +160,10 @@ def get_discharge_statistics(mouse_name, switch_sessions=False, contamination_ra
         df_session.to_csv(session_tsv, sep="\t", index=False)
         print(f"Session statistics saved to {session_tsv}")
         
-        # Save session boxplots
-        session_plot = os.path.join(save_path, f"{sess}_discharge_boxplots.png")
-        save_boxplots(session_data, session_plot, f"Discharge Statistics - {sess}")
+        if session_data:
+            # Save session boxplots
+            session_plot = os.path.join(save_path, f"{sess}_discharge_boxplots.png")
+            save_boxplots(session_data, session_plot, f"Discharge Statistics - {sess}")
 
     # Save overall statistics
     df_overall = pd.DataFrame(all_sessions_data_stats, columns=["Session", "Cluster ID", "Cell Type", "Mean Firing Rate", "Mean CV", "Mean CV2", "Median ISI"])
@@ -170,9 +171,10 @@ def get_discharge_statistics(mouse_name, switch_sessions=False, contamination_ra
     df_overall.to_csv(overall_tsv, sep="\t", index=False)
     print(f"Overall statistics saved to {overall_tsv}")
 
-    # Save combined boxplots
-    overall_plot = os.path.join(dp_base, f"{mouse_name}_overall_discharge_boxplots.png")
-    save_boxplots(all_sessions_data, overall_plot, "Overall Discharge Statistics")
+    if all_sessions_data:
+        # Save combined boxplots
+        overall_plot = os.path.join(dp_base, f"{mouse_name}_overall_discharge_boxplots.png")
+        save_boxplots(all_sessions_data, overall_plot, "Overall Discharge Statistics")
     return all_sessions_data_stats
     
 def compute_cv(t):
@@ -191,7 +193,7 @@ def compute_cv(t):
     isis = np.diff(t)  # Compute interspike intervals
     return np.std(isis) / np.mean(isis)  # CV formula
     
-def main(mouse_name="Zurich", switch_sessions=True, contamination_ratio=0.1, confidence_ratio_threshold=1.5):
+def main(mouse_name="Zachary", switch_sessions=True, contamination_ratio=0.1, confidence_ratio_threshold=1.5):
     if mouse_name is None:
         if len(sys.argv) > 1:
             mouse_name = sys.argv[1]
