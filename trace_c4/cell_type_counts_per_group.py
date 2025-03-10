@@ -11,7 +11,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from get_dropbox_path import get_dropbox_path
- 
+
 def get_mouse_groups():
     """Returns a dictionary containing categorized mouse groups."""
     return {

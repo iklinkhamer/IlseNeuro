@@ -9,7 +9,7 @@ import os
 import shutil  
 from get_dropbox_path import get_dropbox_path
 
- 
+
 def get_mice():
     """Returns a dictionary containing categorized mouse groups."""
     return ["ReserveMouse3"
