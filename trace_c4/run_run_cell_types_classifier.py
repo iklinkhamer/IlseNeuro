@@ -13,7 +13,7 @@ Created on Wed Nov 26 10:23:55 2024
 font_path = '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf' # Path to the Arial font file (adjust the path based on your system)
 font_manager.fontManager.addfont(font_path) # Add the font to Matplotlib's font manager
 """
-
+ 
 import sys
 import npyx
 

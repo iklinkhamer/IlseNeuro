@@ -15,7 +15,7 @@ import copyC4ResultsToAnalysisOutput
 from get_dropbox_path import get_dropbox_path
 import time
 import os
-
+ 
 directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
 folder_name = "SwitchSessionStitching/c4/c4_results_fpfnThreshold_0.1_confidenceRatio_1.5/"
 
