@@ -103,11 +103,17 @@ def save_boxplots(all_sessions_data, save_path, title, show_outliers=False):
 
 
 
-def get_discharge_statistics(mouse_name, switch_sessions=False, contamination_ratio=0.1, confidence_ratio_threshold=2, directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/"), skip_without_continuous=True):
-    
+def get_discharge_statistics(mouse_name = "Ana2"
+                             , switch_sessions=False
+                             , contamination_ratio=0.1
+                             , confidence_ratio_threshold=2
+                             , directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
+                             , save_directory=os.path.join(get_dropbox_path(), "AnalysisOutput/c4 results stats/")
+                             , skip_without_continuous=True):
     dp_base = os.path.join(directory, mouse_name)
     if "ReserveMouse" in mouse_name:
         dp_base = dp_base.replace("MainFolder", "ReserveFolder")
+    save_base = os.path.join(save_directory,mouse_name)
 
     mouse_folders = [
         folder for folder in os.listdir(dp_base)
@@ -118,7 +124,8 @@ def get_discharge_statistics(mouse_name, switch_sessions=False, contamination_ra
     if switch_sessions:
         switch_folder = os.path.join(dp_base, "SwitchSessionStitching")
         if os.path.exists(switch_folder):
-            mouse_folders.append(switch_folder)
+            switch_folder_name = "SwitchSessionStitching"                
+            mouse_folders.append(switch_folder_name)             
 
     phy_folder = "c4"
     all_sessions_data = defaultdict(list)  # Store data by cell type across all sessions
@@ -127,10 +134,11 @@ def get_discharge_statistics(mouse_name, switch_sessions=False, contamination_ra
     for sess in mouse_folders:
         print(f"Processing session: {sess}")
         dp = os.path.join(dp_base, sess, phy_folder)
-        save_path = os.path.join(dp, f"c4_results_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}")
+        specific_c4_results_folder = f"c4_results_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}"
+        save_path = os.path.join(save_base, sess)
         os.makedirs(save_path, exist_ok=True)
 
-        unit_file = os.path.join(save_path, "cluster_predicted_cell_type.tsv")
+        unit_file = os.path.join(dp, specific_c4_results_folder, "cluster_predicted_cell_type.tsv")
         if not os.path.exists(unit_file):
             continue  # Skip if the file doesn't exist
 
@@ -141,7 +149,7 @@ def get_discharge_statistics(mouse_name, switch_sessions=False, contamination_ra
         session_data_stats = []  # Store per-session data
         for _, row in df_units.iterrows():
             cluster_id, cell_type = int(row["cluster_id"]), row["predicted_cell_type"]
-            t = trn(dp, cluster_id)
+            t = trn(dp, cluster_id, cache_results=False)
             ISIs = isi(dp, cluster_id)
             instant_cv2 = inst_cv2(t)
             av_firing_rate = mean_firing_rate(t)
@@ -167,13 +175,13 @@ def get_discharge_statistics(mouse_name, switch_sessions=False, contamination_ra
 
     # Save overall statistics
     df_overall = pd.DataFrame(all_sessions_data_stats, columns=["Session", "Cluster ID", "Cell Type", "Mean Firing Rate", "Mean CV", "Mean CV2", "Median ISI"])
-    overall_tsv = os.path.join(dp_base, f"{mouse_name}_overall_discharge_stats.tsv")
+    overall_tsv = os.path.join(save_base, f"{mouse_name}_overall_discharge_stats.tsv")
     df_overall.to_csv(overall_tsv, sep="\t", index=False)
     print(f"Overall statistics saved to {overall_tsv}")
 
     if all_sessions_data:
         # Save combined boxplots
-        overall_plot = os.path.join(dp_base, f"{mouse_name}_overall_discharge_boxplots.png")
+        overall_plot = os.path.join(save_base, f"{mouse_name}_overall_discharge_boxplots.png")
         save_boxplots(all_sessions_data, overall_plot, "Overall Discharge Statistics")
     return all_sessions_data_stats
     
@@ -193,15 +201,81 @@ def compute_cv(t):
     isis = np.diff(t)  # Compute interspike intervals
     return np.std(isis) / np.mean(isis)  # CV formula
     
-def main(mouse_name="Zachary", switch_sessions=True, contamination_ratio=0.1, confidence_ratio_threshold=1.5):
+def main(mouse_name=None
+         , switch_sessions=True
+         , contamination_ratio=0.1
+         , confidence_ratio_threshold=1.5
+         , directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
+         ):
+    dp_base = directory
     if mouse_name is None:
         if len(sys.argv) > 1:
             mouse_name = sys.argv[1]
         else:
-            print("Error: No mouse name provided")
-            sys.exit(1)
+            try:
+                mice = get_mice()
+                for mouse_name in mice:
+                    if "ReserveMouse" in mouse_name:
+                        dp_base = dp_base.replace("MainFolder", "ReserveFolder")
+                    else:
+                        dp_base = directory
+                    if os.path.exists(os.path.join(dp_base,mouse_name)):
+                        discharge_statistics = get_discharge_statistics(mouse_name, switch_sessions, contamination_ratio, confidence_ratio_threshold)
+                    else:
+                        print(f"Data for {mouse_name} not found. Probably not synced to this computer. Skipping...")
+                sys.exit(1)
+            except:
+                print("Error: No mouse name provided")
+                return
+                #sys.exit(1)
     discharge_statistics = get_discharge_statistics(mouse_name, switch_sessions, contamination_ratio, confidence_ratio_threshold)
     return discharge_statistics
+
+
+def get_mice():
+    """Returns a dictionary containing categorized mouse groups."""
+    return ["ReserveMouse3"
+            , "ReserveMouse1"
+            , "ReserveMouse2"
+            , "ReserveMouse4"
+            , "ReserveMouse5"
+            , "Dallas"
+            , "Flint"
+            , "Greene"
+            , "Houston"
+            , "Iowa"
+            , "Jackson"
+            , "Lincoln"
+            , "Newark"
+            , "Missouri"
+            , "Pittsburg"
+            , "Queens"
+            , "Orleans"
+            , "Reno"
+            , "Seattle"
+            , "Yosemite"
+            , "Zachary"
+            , "Kyiv"
+            , "Istanbul"
+            , "Copenhagen"
+            , "Rotterdam"
+            , "Tallinn"
+            , "Quimper"
+            , "Porto"
+            , "Lisbon"
+            , "Madrid"
+            , "Uppsala"
+            , "Venice"
+            , "Willemstad"
+            , "Zurich"
+            , "York"
+            , "Xanthi"
+            , "Ana1"
+            , "Ana2"
+            , "Ana3"
+            , "Ana4"
+            , "Ana5"
+            , "Amsterdam"]
 
 if __name__ == "__main__":
     main()

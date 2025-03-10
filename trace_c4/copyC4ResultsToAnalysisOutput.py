@@ -50,7 +50,7 @@ def get_mice():
             , "Ana4"
             , "Ana5"]
 
-def main(   mouse_name=None
+def main(   mouse_name="Ana2"
         ,  switch_sessions=True
         ,  directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
         ,  destination_folder="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/AnalysisOutput/c4 results stats/"
@@ -79,17 +79,29 @@ def main(   mouse_name=None
             continue
         
         if switch_sessions:
-            switch_folder = os.path.join(dp_base, "SwitchSessionStitching")
+            switch_folder_name = "SwitchSessionStitching"
+            switch_folder = os.path.join(dp_base, switch_folder_name)
             if os.path.exists(switch_folder):
-                mouse_folders.append(switch_folder)
+                mouse_folders.append(switch_folder_name)
                 
                 
             print(mouse_folders)
-        
+            
+        if os.path.exists(os.path.join(dp_base,"firstWideSession.txt")):
+            shutil.copy(os.path.join(dp_base,"firstWideSession.txt"), os.path.join(destination_folder,mouse_name,"firstWideSession.txt"))
+        if os.path.exists(os.path.join(dp_base,f"{mouse_name}_overall_discharge_boxplots.png")):
+            shutil.move(os.path.join(dp_base,f"{mouse_name}_overall_discharge_boxplots.png"), os.path.join(destination_folder,mouse_name,f"{mouse_name}_overall_discharge_boxplots.png"))
+        if os.path.exists(os.path.join(dp_base,f"{mouse_name}_overall_discharge_stats.tsv")):
+            shutil.move(os.path.join(dp_base,f"{mouse_name}_overall_discharge_stats.tsv"), os.path.join(destination_folder,mouse_name,f"{mouse_name}_overall_discharge_stats.tsv"))
+        if os.path.exists(os.path.join(dp_base,switch_folder_name,"sessionIds")):
+            shutil.copy(os.path.join(dp_base,switch_folder_name,"sessionIds"), os.path.join(destination_folder,mouse_name,switch_folder_name,"sessionIds"))
+            
+            
         for foldername in mouse_folders:
             c4_results_folder_path = os.path.join(dp_base, foldername, "c4", "c4_results_fpfnThreshold_0.1_confidenceRatio_1.5")
             c4_results_file = 'cluster_predicted_cell_type.tsv'
-            c4_results_files = ["cluster_confidence_ratio.tsv", "cluster_model_votes.tsv", "cluster_predicted_cell_type.tsv", "cluster_pred_probability.tsv", f"{foldername}_discharge_stats.tsv"]
+            c4_results_files = ["cluster_confidence_ratio.tsv", "cluster_model_votes.tsv", "cluster_predicted_cell_type.tsv", "cluster_pred_probability.tsv"]
+            move_these_files = [f"{foldername}_discharge_boxplots.png", f"{foldername}_discharge_stats.tsv"]
             
             if os.path.exists(os.path.join(c4_results_folder_path, c4_results_file)):            
                 new_folder = os.path.join(destination_folder,mouse_name,foldername)
@@ -101,6 +113,14 @@ def main(   mouse_name=None
                     if os.path.exists(source_file):
                         shutil.copy(source_file, destination_file)  # Copy file
                         print(f"File copied to: {destination_file}")
+                    else:
+                        print(f"Source file does not exist: {source_file}")
+                for file in move_these_files:
+                    source_file = os.path.join(c4_results_folder_path, file)
+                    destination_file = os.path.join(new_folder, file)
+                    if os.path.exists(source_file):
+                        shutil.move(source_file, destination_file)  # Copy file
+                        print(f"File moved to: {destination_file}")
                     else:
                         print(f"Source file does not exist: {source_file}")
             else:

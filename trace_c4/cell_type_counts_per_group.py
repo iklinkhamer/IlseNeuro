@@ -92,7 +92,7 @@ def plot_per_mouse_group_bar_chart(total_counts_per_mouse, save_path):
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
     plt.close()
 
-def main(contamination_ratio=0.1, confidence_ratio_threshold=2):
+def main(contamination_ratio=0.1, confidence_ratio_threshold=1.5):
     dropbox_path = get_dropbox_path()
     print(dropbox_path)
     #folder_inside_dropbox = "ExperimentOutput/Ephys4Trace1/MainFolder/"

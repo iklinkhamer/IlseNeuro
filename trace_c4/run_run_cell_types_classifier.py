@@ -58,8 +58,8 @@ def run_cell_types_classifier_wrapper(mouse_name
 
         print(f"Processing folder: {sess_oebin}")
 
-        #if sess_oebin != "Seattle_20200909140005":
-        #    continue
+        if sess_oebin != "Ana3_20190531193955":
+            continue
 
         dp = path.join(dp_base, sess_oebin, phy_folder)
         cla_res_path = path.join(dp_base, sess_oebin, phy_folder, "cell_type_classification")
@@ -71,9 +71,6 @@ def run_cell_types_classifier_wrapper(mouse_name
             continue  # Skip to the next iteration if the folder doesn't exist
         if not os.path.exists(f"{dp}/params.py"):
             print(f"params.py folder not found in folder {sess_oebin}, skipping c4 analysis...")
-            continue
-        if not os.path.exists(f"{dp}/continuous/Data_AP_LFP/continuous.dat") and skip_without_continuous:
-            print(f"continuous.dat file not found, skipping c4 analysis")
             continue
         if not classify_again and os.path.exists(save_path):
             print(f"Session {dp} has already been classified and classify again is false, skipping c4 analysis.")
@@ -88,7 +85,7 @@ def run_cell_types_classifier_wrapper(mouse_name
         #run_cell_types_classifier(dp, raise_error=True)
 
 
-def main(mouse_name=None, classify_again=True, switch_sessions=True, contamination_ratio=0.1, confidence_ratio_threshold=1.5):
+def main(mouse_name="Ana3", classify_again=True, switch_sessions=True, contamination_ratio=0.1, confidence_ratio_threshold=1.5):
     if mouse_name is None:
         if len(sys.argv) > 1:
             mouse_name = sys.argv[1]
