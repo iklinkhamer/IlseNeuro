@@ -19,10 +19,7 @@ def get_mouse_groups():
         "Switch": [
             "ReserveMouse3", "Dallas", "Flint", "Greene", "Houston", "Iowa", "Jackson",
             "Lincoln", "Newark", "Missouri", "Pittsburg", "Queens", "Orleans"
-        ],
-        "WideExperts": ["Reno", "Seattle", "Yosemite", "Zachary", "Kyiv", "Istanbul", "Copenhagen"],
-        "Narrow": ["Rotterdam", "Tallinn", "Quimper", "Porto", "Lisbon", "Madrid"],
-        "Bimodal": ["Uppsala", "Venice", "Willemstad", "Zurich", "York", "Xanthi"],
+        ],        
         "Naive": ["Ana1", "Ana2", "Ana3", "Ana4", "Ana5"]
     }
 
@@ -77,25 +74,33 @@ def plot_per_mouse_group_bar_chart(total_counts_per_mouse, save_path):
     df = pd.DataFrame(total_counts_per_mouse).T.fillna(0).astype(int)
     color_map = {'PkC_cs': 'grey', 'MLI': 'pink', 'MFB': 'red', 'GoC': 'green', 'PkC_ss': 'blue'}
 
-    df.plot(kind='bar', figsize=(12, 6), width=0.8, color=[color_map.get(cell, 'gray') for cell in df.columns])
+    num_mice = len(df.index)
+    fig_width = max(12, num_mice * 0.5)  # Scale width dynamically
+    fig_height = 8  # Slightly taller for clarity
+
+    df.plot(kind='bar', figsize=(fig_width, fig_height), width=0.7, color=[color_map.get(cell, 'gray') for cell in df.columns])
 
     plt.xlabel("Mouse Name")
     plt.ylabel("Neuron Count")
     plt.title("Neuron Counts per Cell Type per Mouse Group")
-    plt.xticks(rotation=45)
-    plt.xticks(ticks=range(len(df.index)), labels=df.index, rotation=45, ha='right')
-    plt.legend(title="Cell Type")
+    
+    plt.xticks(ticks=range(num_mice), labels=df.index, rotation=60, ha='right', fontsize=10)  # More rotation
+    plt.yticks(fontsize=10)
+    
+    plt.legend(title="Cell Type", fontsize=10)
     plt.grid(axis='y', linestyle='--', alpha=0.7)
 
+    plt.tight_layout()  # Prevent labels from getting cut off
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
     plt.close()
+
 
 def main(contamination_ratio=0.1, confidence_ratio_threshold=1.5):
     dropbox_path = get_dropbox_path()
     print(dropbox_path)
     #folder_inside_dropbox = "ExperimentOutput/Ephys4Trace1/MainFolder/"
     
-    counts_folder = os.path.join(dropbox_path, f"AnalysisOutput/Cell_type_counts/fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}/")
+    counts_folder = os.path.join(dropbox_path, f"AnalysisOutput/Cell_type_counts/SwitchSessions/fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}/")
     
 
     mice_groups = get_mouse_groups()
@@ -106,7 +111,7 @@ def main(contamination_ratio=0.1, confidence_ratio_threshold=1.5):
     # Check file existence
     for group, mice in mice_groups.items():
         for mouse in mice:
-            counts_file_new = f"_cell_type_counts_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.tsv"
+            counts_file_new = f"_switch_sessions_cell_type_counts_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.tsv"
             counts_file_old = "_cell_type_counts.tsv"
             
             file_path_new = os.path.join(counts_folder, f"{mouse}{counts_file_new}")
@@ -120,25 +125,29 @@ def main(contamination_ratio=0.1, confidence_ratio_threshold=1.5):
             else:
                 continue  # Skip if neither file exists
     
+           
+    
+            # Store mouse and file path
             mice_to_analyze[group].append(mouse)
-            mouse_files[group][mouse] = file_path  # Store as {group: {mouse: path}}
+            mouse_files[group][mouse] = {"file": file_path}
+
     
     total_counts_per_cell_type = {group: [] for group in mice_groups}
     total_counts_per_mouse = {}
     
-    # Read and aggregate data
     for group, mice in mice_to_analyze.items():
         for mouse in mice:
-            file_path = mouse_files[group][mouse]  # Correctly access file path
-            cell_type_counts = read_tsv(file_path)
+            file_info = mouse_files[group][mouse]
+            file_path = file_info["file"]            
             
+            cell_type_counts = read_tsv(file_path)
             if cell_type_counts.empty:
                 continue
             
-            total_counts_per_cell_type[group].append(cell_type_counts.iloc[-2, :].astype(int))
+            # Normal case: just store as before
+            total_counts_per_cell_type.setdefault(group, []).append(cell_type_counts.iloc[-2, :].astype(int))
+            total_counts_per_mouse[mouse] = cell_type_counts.iloc[-2, :].astype(int)
 
-            mouse_counts = cell_type_counts.iloc[-2, :].astype(int)
-            total_counts_per_mouse[mouse] = mouse_counts
     
     # Ensure only non-empty groups are processed
     results_df = pd.DataFrame({

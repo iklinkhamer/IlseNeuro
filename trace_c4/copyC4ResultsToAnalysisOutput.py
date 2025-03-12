@@ -50,7 +50,7 @@ def get_mice():
             , "Ana4"
             , "Ana5"]
 
-def main(   mouse_name="Ana2"
+def main(   mouse_name=None
         ,  switch_sessions=True
         ,  directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
         ,  destination_folder="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/AnalysisOutput/c4 results stats/"

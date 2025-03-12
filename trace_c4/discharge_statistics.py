@@ -16,6 +16,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from get_dropbox_path import get_dropbox_path
+from plot_utils_IK import c4_colors_rgb, lighten, normalize_RGB_dict
 
 def save_boxplots(all_sessions_data, save_path, title, show_outliers=False):
     """Generate and save boxplots with scatter overlay for ISI, CV2, and firing rate.
@@ -30,13 +31,9 @@ def save_boxplots(all_sessions_data, save_path, title, show_outliers=False):
     fixed_order = ["PkC_ss", "PkC_cs", "MLI", "GoC", "MFB"]  # Fixed order (if present)
     fig, axes = plt.subplots(1, 4, figsize=(18, 5))
     
-    color_map = {
-        "PkC_ss": "blue",
-        "PkC_cs": "black",
-        "MLI": "pink",
-        "GoC": "green",
-        "MFB": "red"
-    }
+    color_map = c4_colors_rgb() 
+    color_map['PkC_cs'] = lighten(color_map['PkC_cs'])
+    color_map = normalize_RGB_dict(color_map)
 
     for i, metric in enumerate(metrics):
         # Extract data, keeping only present cell types
@@ -103,7 +100,7 @@ def save_boxplots(all_sessions_data, save_path, title, show_outliers=False):
 
 
 
-def get_discharge_statistics(mouse_name = "Ana2"
+def get_discharge_statistics(mouse_name = "Iowa"
                              , switch_sessions=False
                              , contamination_ratio=0.1
                              , confidence_ratio_threshold=2
@@ -128,7 +125,7 @@ def get_discharge_statistics(mouse_name = "Ana2"
             mouse_folders.append(switch_folder_name)             
 
     phy_folder = "c4"
-    all_sessions_data = defaultdict(list)  # Store data by cell type across all sessions
+    all_sessions_data_plot = defaultdict(list)  # Store data by cell type across all sessions
     all_sessions_data_stats = []
     
     for sess in mouse_folders:
@@ -157,7 +154,8 @@ def get_discharge_statistics(mouse_name = "Ana2"
 
             data_entry = [cluster_id, av_firing_rate, np.mean(cv), np.mean(instant_cv2), np.median(ISIs)]
             session_data[cell_type].append(data_entry)
-            all_sessions_data[cell_type].append(data_entry)
+            if not sess == "SwitchSessionStitching":
+                all_sessions_data_plot[cell_type].append(data_entry)
             data_entry = [sess, cluster_id, cell_type, av_firing_rate, np.mean(cv), np.mean(instant_cv2), np.median(ISIs)]
             session_data_stats.append(data_entry)
             all_sessions_data_stats.append(data_entry)
@@ -179,10 +177,11 @@ def get_discharge_statistics(mouse_name = "Ana2"
     df_overall.to_csv(overall_tsv, sep="\t", index=False)
     print(f"Overall statistics saved to {overall_tsv}")
 
-    if all_sessions_data:
+    if all_sessions_data_plot:
         # Save combined boxplots
         overall_plot = os.path.join(save_base, f"{mouse_name}_overall_discharge_boxplots.png")
-        save_boxplots(all_sessions_data, overall_plot, "Overall Discharge Statistics")
+        save_boxplots(all_sessions_data_plot, overall_plot, "Overall Discharge Statistics")
+        
     return all_sessions_data_stats
     
 def compute_cv(t):

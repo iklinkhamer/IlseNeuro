@@ -50,7 +50,8 @@ def run_cell_types_classifier_wrapper(mouse_name
     if switch_sessions:
         switch_folder = os.path.join(dp_base, "SwitchSessionStitching")
         if os.path.exists(switch_folder):
-            mouse_folders.append(switch_folder)
+            switch_folder_name = "SwitchSessionStitching"
+            mouse_folders.append(switch_folder_name)
 
     phy_folder = "c4"
 
@@ -58,12 +59,13 @@ def run_cell_types_classifier_wrapper(mouse_name
 
         print(f"Processing folder: {sess_oebin}")
 
-        if sess_oebin != "Ana3_20190531193955":
-            continue
+        #if sess_oebin != "Ana3_20190531193955":
+        #    continue
 
         dp = path.join(dp_base, sess_oebin, phy_folder)
         cla_res_path = path.join(dp_base, sess_oebin, phy_folder, "cell_type_classification")
         save_path = os.path.join(dp, f"c4_results_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}")
+        results_file_path = os.path.join(save_path, "cluster_predicted_cell_type.tsv")
 
 
         if not os.path.exists(dp):
@@ -72,7 +74,7 @@ def run_cell_types_classifier_wrapper(mouse_name
         if not os.path.exists(f"{dp}/params.py"):
             print(f"params.py folder not found in folder {sess_oebin}, skipping c4 analysis...")
             continue
-        if not classify_again and os.path.exists(save_path):
+        if not classify_again and os.path.isfile(results_file_path):
             print(f"Session {dp} has already been classified and classify again is false, skipping c4 analysis.")
             continue
         os.makedirs(save_path, exist_ok=True)

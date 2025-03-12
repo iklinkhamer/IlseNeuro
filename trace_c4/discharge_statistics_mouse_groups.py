@@ -11,6 +11,7 @@ import pandas as pd
 from collections import defaultdict
 import getting_mouse_groups
 import discharge_statistics
+from plot_utils_IK import c4_colors_rgb, lighten, normalize_RGB_dict
 
 def compute_discharge_statistics_by_mouse_type(directory, save_directory):
     """
