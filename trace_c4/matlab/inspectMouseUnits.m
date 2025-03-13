@@ -41,7 +41,8 @@ arguments
     kwargs.evaluateC4Analysis = true;
     kwargs.batchMode=true;
     kwargs.outputFolder = fullfile(Env.getBayesLabUserRoot,"/TraceExperiments/AnalysisOutput/Trace C4 Figures/rasters 10% contamination good units");
-    kwargs.directory = fullfile(Env.getBayesLabUserRoot, "/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/", mouseName);    
+    kwargs.directory = fullfile(Env.getBayesLabUserRoot, "/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/", mouseName);   
+    kwargs.results_subfolder = fullfile("c4", "c4_results_fpfnThreshold_0.1_confidenceRatio_1.5");
 end
 
 mouse = Subject(mouseName);
@@ -74,37 +75,41 @@ for session = sessions(:)'
     end
 
     if kwargs.evaluateC4Analysis
-        classification_folder_path = fullfile(kwargs.directory, mouseName+"_"+session.timestampIdStr, "c4", "c4_results_fpfnThreshold_0.1_confidenceRatio_1.5", "cell_type_classification");
 
-        neuron_numbers = [];    % Initialize an empty array to store numbers
+        % Define the file path
+        file_path = fullfile(kwargs.directory, mouseName, mouseName+"_"+session.timestampIdStr, kwargs.results_subfolder, "cluster_predicted_cell_type.tsv");
 
-        files = dir(classification_folder_path);    % Get a list of all files in the target folder
+        % Initialize variables
+        cell_types = [];
+        classification_neurons = [];
+        neuron_ids = [];
 
-        for j = 1:length(files)
-            filename = files(j).name;
+        % Check if the file exists
+        if exist(file_path, 'file')
+            % Read the TSV file
+            data = readtable(file_path, 'FileType', 'text', 'Delimiter', '\t');
 
-            if startsWith(filename, "unit") % Check if the filename starts with "unit"
-                neuron_number = regexp(filename, '\d+', 'match');   % Extract numbers from the filename using a regular expression
-                if ~isempty(neuron_number)
-                    neuron_numbers = [neuron_numbers, str2double(neuron_number{1})]; %#ok<AGROW>
-                end
+            % Validate required columns
+            if all(ismember(["cluster_id", "predicted_cell_type"], data.Properties.VariableNames))
+                % Extract neuron numbers
+                neuron_ids = sort(unique(double(data.cluster_id)));
+
+                % Extract cell types
+                cell_types = unique(data.predicted_cell_type);
+
+                % Store classification data
+                classification_neurons = string(data.predicted_cell_type);
+
+            else
+                warning("Required columns 'cluster_id' and 'predicted_cell_type' not found in the file.");
             end
+        else
+            warning("File 'cluster_predicted_cell-type.tsv' not found.");
         end
 
-        neuron_numbers = sort(neuron_numbers);
-        %load(fullfile(classification_folder_path, "neurons_filtered_c4.mat"));
-        disp(neuron_numbers); % Outputs: [1 23 42]
-
-        c4_folder = fileparts(classification_folder_path);
-        classification_neurons_ = readtable(fullfile(c4_folder,"cluster_predicted_cell_type.tsv"), 'FileType', 'text', 'Delimiter', '\t');
-        cell_types_ = unique(classification_neurons_(2:end,2));
-        cell_types = cell_types_.predicted_cell_type;
-
-        classification_neurons = string(classification_neurons_.predicted_cell_type);
-        neuron_ids = double(classification_neurons_.cluster_id);
-
-
-
+        % Display extracted neuron numbers
+        disp(neuron_ids);
+        
         if kwargs.saveFigs
             for t = 1:size(cell_types,1)
                 cell_type = cell_types(t);
@@ -115,7 +120,7 @@ for session = sessions(:)'
             end
         end
         neuronIDs = cellfun(@(x) str2double(regexp(x, '\d+$', 'match', 'once')), [units.id]);
-        [~,neuronIDs_filtered_in] = intersect(neuronIDs,neuron_numbers);
+        [~,neuronIDs_filtered_in] = intersect(neuronIDs,neuron_ids);
         mask = true(1,length(neuronIDs));
         mask(neuronIDs_filtered_in) = false;
         neuronIDs_filtered_out_units = neuronIDs(mask);
@@ -134,3 +139,34 @@ for session = sessions(:)'
 end
 end
 
+
+%%%
+% classification_folder_path = fullfile(kwargs.directory, mouseName+"_"+session.timestampIdStr, kwargs.results_subfolder, "cell_type_classification");
+% 
+%         neuron_numbers = [];    % Initialize an empty array to store numbers
+% 
+%         files = dir(classification_folder_path);    % Get a list of all files in the target folder
+% 
+%         for j = 1:length(files)
+%             filename = files(j).name;
+% 
+%             if startsWith(filename, "unit") % Check if the filename starts with "unit"
+%                 neuron_number = regexp(filename, '\d+', 'match');   % Extract numbers from the filename using a regular expression
+%                 if ~isempty(neuron_number)
+%                     neuron_numbers = [neuron_numbers, str2double(neuron_number{1})]; %#ok<AGROW>
+%                 end
+%             end
+%         end
+% 
+%         neuron_numbers = sort(neuron_numbers);
+%         %load(fullfile(classification_folder_path, "neurons_filtered_c4.mat"));
+%         disp(neuron_numbers); % Outputs: [1 23 42]
+% 
+%         c4_folder = fileparts(classification_folder_path);
+%         classification_neurons_ = readtable(fullfile(c4_folder,"cluster_predicted_cell_type.tsv"), 'FileType', 'text', 'Delimiter', '\t');
+%         cell_types_ = unique(classification_neurons_(2:end,2));
+%         cell_types = cell_types_.predicted_cell_type;
+% 
+%         classification_neurons = string(classification_neurons_.predicted_cell_type);
+%         neuron_ids = double(classification_neurons_.cluster_id);
+        %%%
