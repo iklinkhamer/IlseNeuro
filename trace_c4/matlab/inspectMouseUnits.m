@@ -38,9 +38,10 @@ function inspectMouseUnits(mouseName, kwargs)
 arguments
     mouseName = "Venice";
     kwargs.saveFigs = true;
+    kwargs.evaluateC4Analysis = true;
+    kwargs.batchMode=true;
     kwargs.outputFolder = fullfile(Env.getBayesLabUserRoot,"/TraceExperiments/AnalysisOutput/Trace C4 Figures/rasters 10% contamination good units");
-    kwargs.directory = fullfile(Env.getBayesLabUserRoot, "/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/", mouseName);
-    kwargs.evaluateC4Analysis = false;
+    kwargs.directory = fullfile(Env.getBayesLabUserRoot, "/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/", mouseName);    
 end
 
 mouse = Subject(mouseName);
@@ -73,7 +74,7 @@ for session = sessions(:)'
     end
 
     if kwargs.evaluateC4Analysis
-        classification_folder_path = fullfile(kwargs.directory, mouseName+"_"+session.timestampIdStr, "c4", "cell_type_classification");
+        classification_folder_path = fullfile(kwargs.directory, mouseName+"_"+session.timestampIdStr, "c4", "c4_results_fpfnThreshold_0.1_confidenceRatio_1.5", "cell_type_classification");
 
         neuron_numbers = [];    % Initialize an empty array to store numbers
 
@@ -122,7 +123,12 @@ for session = sessions(:)'
         IK.IK_PSTH_Selection(units, outputFolder=fullfile(fileparts(kwargs.outputFolder), "rasters 10% contamination filtered-out units"), selectBatchMode=true, selectArray=neuronIDs_filtered_out_units)
 
     else
-        IK.IK_PSTH_Selection(units, outputFolder=fullfile(fileparts(kwargs.outputFolder), "rasters (not filtered)"))
+        if ~kwargs.batchMode
+            IK.IK_PSTH_Selection(units, outputFolder=fullfile(fileparts(kwargs.outputFolder), "rasters (not filtered)"))
+        else
+            neuronIDs = cellfun(@(x) str2double(regexp(x, '\d+$', 'match', 'once')), [units.id]);
+            IK.IK_PSTH_Selection(units, outputFolder=fullfile(fileparts(kwargs.outputFolder), "rasters (not filtered)"), selectBatchMode=true, selectArray=neuronIDs)
+        end
 
     end
 end

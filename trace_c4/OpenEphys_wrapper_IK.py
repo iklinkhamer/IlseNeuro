@@ -123,11 +123,12 @@ def convertOpenEphysDataToContinuous(   mouse_name
         destination_folder = os.path.join(dp_base, foldername, "c4")
         
         # Define the files to exclude
-        excluded_files = {'Data4KS2.bin', 'temp_wh.dat', 'rez.mat', 'pc_features.npy', 'template_features.npy'}  # Add all filenames to exclude
+        #excluded_files = {'Data4KS2.bin', 'temp_wh.dat', 'rez.mat', 'pc_features.npy', 'template_features.npy'}  # Add all filenames to exclude
+        included_files = {'amplitudes.npy', 'cluster_group.tsv', 'params.py', 'spike_clusters.npy', 'spike_times.npy'}
         
         def ignore_files(dir, files):
             """Custom ignore function to exclude specific files."""
-            return {file for file in files if file in excluded_files}
+            return {file for file in files if file not in included_files}
         
         # Copy the folder, excluding the specified files
         if os.path.exists(source_folder):
@@ -137,7 +138,7 @@ def convertOpenEphysDataToContinuous(   mouse_name
                 dirs_exist_ok=True,  # Allow overwriting if destination exists (Python 3.8+)
                 ignore=ignore_files
             )
-            print(f"Contents of {source_folder} copied to {destination_folder}, excluding {excluded_files}")
+            print(f"Contents of {source_folder} copied to {destination_folder}, including {included_files}")
         else:
             print(f"Source folder does not exist: {source_folder}")
             
