@@ -71,9 +71,6 @@ def convertOpenEphysDataToContinuous(   mouse_name
         source_folder = os.path.join(dp_base, foldername, "Data")
         destination_folder = os.path.join(dp_base, foldername, "c4", "continuous", "Data_AP_LFP")
         
-        # Create the destination folder if it doesn't exist
-        os.makedirs(destination_folder, exist_ok=True)
-        
         # Define file paths
         source_file = os.path.join(source_folder, "openephys.dat")
         destination_file = os.path.join(destination_folder, "continuous.dat")
@@ -94,6 +91,9 @@ def convertOpenEphysDataToContinuous(   mouse_name
                     break  # Stop after finding the first match
        
         OpenEphys.pack_2(folderpath=source_folder, filename="openephys.dat", source=match, channels = channels)
+        
+        # Create the destination folder if it doesn't exist
+        os.makedirs(destination_folder, exist_ok=True)
         
         # Move and rename the file
         if os.path.exists(source_file):
@@ -141,7 +141,7 @@ def convertOpenEphysDataToContinuous(   mouse_name
         else:
             print(f"Source folder does not exist: {source_folder}")
             
-def main(   mouse_name="Ana3"
+def main(   mouse_name="Dallas"
          ,  switch_sessions=True):
     if mouse_name is None:
         if len(sys.argv) > 1:

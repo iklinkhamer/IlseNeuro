@@ -9,6 +9,11 @@ Dropbox: https://www.dropbox.com/home/Lucas%20Bayones/TraceExperiments/ComplexSp
 How to fix xcb:
 pip install opencv-python-headless
 
+How to fix files not getting uploaded to dropbox because of inotify watches for normal users:
+cat /proc/sys/fs/inotify/max_user_watches # To see current number of watches
+
+echo 999999999 | sudo tee /proc/sys/fs/inotify/max_user_watches # To increase number of watches
+
 
 run irc2 in matlab:
 	irc2('/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/Venice/Venice_20240523115524 (copy)/Extraction2Bin/Data4KS2.bin', '/home/no1/Documents/code/IlseNeuro/trace_c4/matlab/ephys_code/DBC_3.1-64-H2_IK.prb','/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/Venice/Venice_20240523115524 (copy)/Extraction2Bin/irc')

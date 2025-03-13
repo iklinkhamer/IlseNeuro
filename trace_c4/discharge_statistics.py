@@ -106,7 +106,7 @@ def get_discharge_statistics(mouse_name = "Iowa"
                              , confidence_ratio_threshold=2
                              , directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
                              , save_directory=os.path.join(get_dropbox_path(), "AnalysisOutput/c4 results stats/")
-                             , skip_without_continuous=True):
+                             ):
     dp_base = os.path.join(directory, mouse_name)
     if "ReserveMouse" in mouse_name:
         dp_base = dp_base.replace("MainFolder", "ReserveFolder")
@@ -205,29 +205,42 @@ def main(mouse_name=None
          , contamination_ratio=0.1
          , confidence_ratio_threshold=1.5
          , directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
+         , save_directory=os.path.join(get_dropbox_path(), "AnalysisOutput/c4 results stats/")
+         , again=False
          ):
-    dp_base = directory
+    
     if mouse_name is None:
         if len(sys.argv) > 1:
             mouse_name = sys.argv[1]
+            mice = [mouse_name]
         else:
             try:
                 mice = get_mice()
-                for mouse_name in mice:
-                    if "ReserveMouse" in mouse_name:
-                        dp_base = dp_base.replace("MainFolder", "ReserveFolder")
-                    else:
-                        dp_base = directory
-                    if os.path.exists(os.path.join(dp_base,mouse_name)):
-                        discharge_statistics = get_discharge_statistics(mouse_name, switch_sessions, contamination_ratio, confidence_ratio_threshold)
-                    else:
-                        print(f"Data for {mouse_name} not found. Probably not synced to this computer. Skipping...")
-                sys.exit(1)
             except:
                 print("Error: No mouse name provided")
                 return
+    else:
+        mice = [mouse_name]
+        
+    for mouse_name in mice:
+        if not again and os.path.isfile(os.path.join(save_directory, mouse_name, f"{mouse_name}_overall_discharge_stats.tsv")):
+            continue
+        if "ReserveMouse" in mouse_name:
+            dp_base = directory.replace("MainFolder", "ReserveFolder")
+        else:
+            dp_base = directory
+        discharge_statistics = []
+        if os.path.exists(os.path.join(dp_base,mouse_name)):
+            try:
+                discharge_statistics = get_discharge_statistics(mouse_name, switch_sessions, contamination_ratio, confidence_ratio_threshold)
+            except:
+                continue    
+        else:
+            print(f"Data for {mouse_name} not found. Probably not synced to this computer. Skipping...")
+            continue
+
                 #sys.exit(1)
-    discharge_statistics = get_discharge_statistics(mouse_name, switch_sessions, contamination_ratio, confidence_ratio_threshold)
+    #discharge_statistics = get_discharge_statistics(mouse_name, switch_sessions, contamination_ratio, confidence_ratio_threshold)
     return discharge_statistics
 
 
@@ -274,7 +287,7 @@ def get_mice():
             , "Ana3"
             , "Ana4"
             , "Ana5"
-            , "Amsterdam"]
+            ]
 
 if __name__ == "__main__":
     main()

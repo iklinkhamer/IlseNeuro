@@ -139,21 +139,20 @@ def get_mice():
             , "Houston", "Iowa", "Jackson", "Lincoln", "Newark", "Missouri", "Pittsburg", "Queens", "Orleans", "Reno"
             , "Seattle", "Yosemite", "Zachary", "Kyiv", "Istanbul", "Copenhagen", "Rotterdam", "Tallinn", "Quimper", "Porto"
             , "Lisbon", "Madrid", "Uppsala", "Venice", "Willemstad", "Zurich", "York", "Xanthi", "Ana1", "Ana2", "Ana3"
-            , "Ana4", "Ana5", "Amsterdam"]
+            , "Ana4", "Ana5"]
 
 # Main function
 def main(mouse_name=None,
-         general_results=False,
          contamination_ratio=0.1,
          confidence_ratio_threshold=1.5,
          directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/"),
          alt_directory=os.path.join(get_dropbox_path(),"AnalysisOutput/c4 results stats/"),
          save_dir=os.path.join(get_dropbox_path(), "AnalysisOutput/Cell_type_counts/"),
-         switch_sessions=False):    
+         inspectAgain=True):    
        
-    if not general_results:
-        save_dir = os.path.join(save_dir,f"fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}")
-        os.makedirs(save_dir, exist_ok=True)
+    
+    save_dir = os.path.join(save_dir,f"fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}")
+    os.makedirs(save_dir, exist_ok=True)
     
     if mouse_name is None:
         if len(sys.argv) > 1:
@@ -165,6 +164,9 @@ def main(mouse_name=None,
         mice = [mouse_name]
     
     for mouse_name in mice:
+        if not inspectAgain and os.path.isfile(os.path.join(save_dir, f"{mouse_name}_cell_type_counts_fpfnThreshold_0.1_confidenceRatio_1.5.tsv")):
+            continue
+        
         if "ReserveMouse" in mouse_name:
             dp_base = directory.replace("MainFolder", "ReserveFolder")
         else:
@@ -173,33 +175,26 @@ def main(mouse_name=None,
         dp_base = os.path.join(dp_base, mouse_name)
         alt_dp_base = os.path.join(alt_directory, mouse_name)
         if os.path.exists(dp_base) or os.path.exists(alt_dp_base):
-            mouse_folders = []  
-            if switch_sessions:                              
-                switch_folder_name = "SwitchSessionStitching"   
-                if os.path.exists(os.path.join(dp_base, switch_folder_name)):                                      
-                    mouse_folders.append(switch_folder_name)    
-                elif os.path.exists(os.path.join(alt_dp_base, switch_folder_name)):
-                    mouse_folders.append(switch_folder_name)
-            else:
-                if os.path.exists(dp_base):
-                    mouse_folders = [
-                        folder for folder in os.listdir(dp_base)
-                        if os.path.isdir(os.path.join(dp_base, folder)) 
-                        and mouse_name in folder 
-                        and "copy" not in folder
-                        and "Copy" not in folder
-                    ]
-                alt_mouse_folders = []
-                if os.path.exists(dp_base):
-                    alt_mouse_folders = [
-                        folder for folder in os.listdir(alt_dp_base)
-                        if os.path.isdir(os.path.join(alt_dp_base, folder)) 
-                        and mouse_name in folder 
-                    ]
-                all_folders = mouse_folders + alt_mouse_folders
-                mouse_folders = list(set(all_folders))
-                
-                mouse_folders.sort()     
+            mouse_folders = []              
+            if os.path.exists(dp_base):
+                mouse_folders = [
+                    folder for folder in os.listdir(dp_base)
+                    if os.path.isdir(os.path.join(dp_base, folder)) 
+                    and mouse_name in folder 
+                    and "copy" not in folder
+                    and "Copy" not in folder
+                ]
+            alt_mouse_folders = []
+            if os.path.exists(dp_base):
+                alt_mouse_folders = [
+                    folder for folder in os.listdir(alt_dp_base)
+                    if os.path.isdir(os.path.join(alt_dp_base, folder)) 
+                    and mouse_name in folder 
+                ]
+            all_folders = mouse_folders + alt_mouse_folders
+            mouse_folders = list(set(all_folders))
+            
+            mouse_folders.sort()     
         else:
             continue                        
                 
