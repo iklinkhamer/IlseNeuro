@@ -36,7 +36,7 @@
 
 function inspectMouseUnits(mouseName, kwargs)
 arguments
-    mouseName = "Venice";
+    mouseName = "Ana4";
     kwargs.saveFigs = true;
     kwargs.evaluateC4Analysis = true;
     kwargs.batchMode=true;

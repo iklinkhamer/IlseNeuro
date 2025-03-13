@@ -1,1 +1,5 @@
 __pycache__/
+hide
+npyx_fork
+exclude_list_tmp.txt
+filtered_exclude_list.txt

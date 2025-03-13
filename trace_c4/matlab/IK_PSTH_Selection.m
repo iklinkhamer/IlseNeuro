@@ -32,6 +32,7 @@ arguments
     kwargs.lineWidth (1,1) {isreal} = 0.5;
     kwargs.selectBatchMode (1,1) logical = false % if true, save a selection of neurons provided in an array
     kwargs.selectArray = [];
+    kwargs.noDoubleCopies = true;
 end
 
 DnDisp('----------- Single Unit Analysis ----------')
@@ -83,6 +84,27 @@ for n = 1:nNeurons
         % for firing rate baseline) use it to skip neurons failing its
         % constraint.
         fprintf("\tSkipping neuron: %s\n", neuron.id)
+        continue
+    end
+
+    if not(isfield(kwargs, "subfolder"))
+        switch class(neuron.session)
+            case 'Session'
+                subfolder = neuron.session.tracePriorName();
+            case 'StitchedSessions'
+                subfolder = "";
+            otherwise
+                warning("Unkown session class %s", class(neuron.session))
+                keyboard
+        end
+    else
+        subfolder = kwargs.subfolder;
+    end
+
+
+    fname = sprintf('PSTHPair_%s', neuron.id);
+
+    if kwargs.noDoubleCopies && exist(fullfile(kwargs.outputFolder, subfolder, sprintf("%s.%s", fname, kwargs.fileTypes(1))), "file")
         continue
     end
 
@@ -152,13 +174,19 @@ for n = 1:nNeurons
         else
             subfolder = kwargs.subfolder;
         end
-
-
-        fprintf("\tSaving neuron:%s\n", neuron.id)
+               
+        
         fname = sprintf('PSTHPair_%s', neuron.id);
+
+        if kwargs.noDoubleCopies && exist(fullfile(kwargs.outputFolder, subfolder, sprintf("%s.%s", fname, kwargs.fileTypes(1))), "file")
+            continue
+        end
         % filepath = fullfile( kwargs.outputFolder ...
         %                    , subfolder ...
         %                    , fname );
+
+        fprintf("\tSaving neuron:%s\n", neuron.id)
+
         printFigure ...
             ( fig ...
             , fname ...
