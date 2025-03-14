@@ -77,7 +77,7 @@ for session = sessions(:)'
     if kwargs.evaluateC4Analysis
 
         % Define the file path
-        file_path = fullfile(kwargs.directory, mouseName, mouseName+"_"+session.timestampIdStr, kwargs.results_subfolder, "cluster_predicted_cell_type.tsv");
+        file_path = fullfile(kwargs.directory, mouseName+"_"+session.timestampIdStr, kwargs.results_subfolder, "cluster_predicted_cell_type.tsv");
 
         % Initialize variables
         cell_types = [];
@@ -104,12 +104,12 @@ for session = sessions(:)'
                 warning("Required columns 'cluster_id' and 'predicted_cell_type' not found in the file.");
             end
         else
-            warning("File 'cluster_predicted_cell-type.tsv' not found.");
+            warning("File 'cluster_predicted_cell_type.tsv' not found.");
         end
 
         % Display extracted neuron numbers
         disp(neuron_ids);
-        
+
         if kwargs.saveFigs
             for t = 1:size(cell_types,1)
                 cell_type = cell_types(t);
