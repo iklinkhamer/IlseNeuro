@@ -6,6 +6,7 @@ for m = 1:length(mouse_names)
     try
         mouseName = mouse_names(m);
         inspectMouseUnits(mouseName, directory = fullfile(Env.getBayesLabUserRoot, "/TraceExperiments/AnalysisOutput/", mouseName), results_subfolder= "")
+        JkUtils.memoize.clearCacheSystem();
     catch
         disp("Catch")
     end
