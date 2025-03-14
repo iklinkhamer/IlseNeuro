@@ -17,6 +17,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from get_dropbox_path import get_dropbox_path
 from plot_utils_IK import c4_colors_rgb, lighten, normalize_RGB_dict
+from mouseUtils import getMouseFolders
 
 def save_boxplots(all_sessions_data, save_path, title, show_outliers=False):
     """Generate and save boxplots with scatter overlay for ISI, CV2, and firing rate.
@@ -106,17 +107,20 @@ def get_discharge_statistics(mouse_name = "Iowa"
                              , confidence_ratio_threshold=2
                              , directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
                              , save_directory=os.path.join(get_dropbox_path(), "AnalysisOutput/c4 results stats/")
+                             , again=False
                              ):
     dp_base = os.path.join(directory, mouse_name)
     if "ReserveMouse" in mouse_name:
         dp_base = dp_base.replace("MainFolder", "ReserveFolder")
     save_base = os.path.join(save_directory,mouse_name)
-
+    """
     mouse_folders = [
         folder for folder in os.listdir(dp_base)
         if os.path.isdir(os.path.join(dp_base, folder)) and mouse_name in folder and "copy" not in folder.lower()
     ]
     mouse_folders.sort()
+    """
+    mouse_folders = getMouseFolders(mouse_name)
 
     if switch_sessions:
         switch_folder = os.path.join(dp_base, "SwitchSessionStitching")
@@ -127,38 +131,58 @@ def get_discharge_statistics(mouse_name = "Iowa"
     phy_folder = "c4"
     all_sessions_data_plot = defaultdict(list)  # Store data by cell type across all sessions
     all_sessions_data_stats = []
-    
+    update_final_fig=True
     for sess in mouse_folders:
+        
+        if not again and os.path.isfile(os.path.join(save_directory, mouse_name, sess, f"{sess}_discharge_stats.tsv")) and os.path.isfile(os.path.join(save_directory, mouse_name, sess, f"{sess}_discharge_boxplots.png")) and os.path.isfile(os.path.join(save_directory, mouse_name, f"{mouse_name}_overall_discharge_boxplots.png")) and os.path.isfile(os.path.join(save_directory, mouse_name, f"{mouse_name}_overall_discharge_stats.tsv")):
+            print(f"Session {sess} already done, skipping this session...")
+            update_final_fig=False
+            continue
+        
         print(f"Processing session: {sess}")
-        dp = os.path.join(dp_base, sess, phy_folder)
-        specific_c4_results_folder = f"c4_results_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}"
+        
         save_path = os.path.join(save_base, sess)
         os.makedirs(save_path, exist_ok=True)
-
-        unit_file = os.path.join(dp, specific_c4_results_folder, "cluster_predicted_cell_type.tsv")
-        if not os.path.exists(unit_file):
-            continue  # Skip if the file doesn't exist
-
-        df_units = pd.read_csv(unit_file, sep="\t", usecols=["cluster_id", "predicted_cell_type"])
-        df_units = df_units.dropna()
-
-        session_data = defaultdict(list)  # Store per-session data by cell type
-        session_data_stats = []  # Store per-session data
-        for _, row in df_units.iterrows():
-            cluster_id, cell_type = int(row["cluster_id"]), row["predicted_cell_type"]
-            t = trn(dp, cluster_id, cache_results=False)
-            ISIs = isi(dp, cluster_id)
-            instant_cv2 = inst_cv2(t)
-            av_firing_rate = mean_firing_rate(t)
-            cv = compute_cv(t)
-
-            data_entry = [cluster_id, av_firing_rate, np.mean(cv), np.mean(instant_cv2), np.median(ISIs)]
-            session_data[cell_type].append(data_entry)
-            if not sess == "SwitchSessionStitching":
-                all_sessions_data_plot[cell_type].append(data_entry)
-            data_entry = [sess, cluster_id, cell_type, av_firing_rate, np.mean(cv), np.mean(instant_cv2), np.median(ISIs)]
-            session_data_stats.append(data_entry)
-            all_sessions_data_stats.append(data_entry)
+            
+        discharge_results_session_file = os.path.join(save_directory, mouse_name, sess, f"{sess}_discharge_stats.tsv")
+        if os.path.isfile(discharge_results_session_file):
+            session_data_frame = pd.read_csv(discharge_results_session_file, sep="\t", usecols=["Session", "Cluster ID", "Cell Type", "Mean Firing Rate", "Mean CV", "Mean CV2", "Median ISI"])
+            session_data = session_data_frame.groupby("Cell Type")[["Cluster ID", "Mean Firing Rate", "Mean CV", "Mean CV2", "Median ISI"]].apply(lambda df: df.values.tolist()).to_dict()
+            session_data_stats = session_data_frame.values.tolist()
+            all_sessions_data_stats.extend(session_data_stats)
+            for key, values in session_data.items():
+                all_sessions_data_plot.setdefault(key, []).extend(values)
+            a = 1
+        else:
+        
+            dp = os.path.join(dp_base, sess, phy_folder)
+            specific_c4_results_folder = f"c4_results_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}"
+    
+            unit_file = os.path.join(dp, specific_c4_results_folder, "cluster_predicted_cell_type.tsv")
+            if not os.path.exists(unit_file):
+                continue  # Skip if the file doesn't exist      
+                    
+                
+            df_units = pd.read_csv(unit_file, sep="\t", usecols=["cluster_id", "predicted_cell_type"])
+            df_units = df_units.dropna()
+    
+            session_data = defaultdict(list)  # Store per-session data by cell type
+            session_data_stats = []  # Store per-session data
+            for _, row in df_units.iterrows():
+                cluster_id, cell_type = int(row["cluster_id"]), row["predicted_cell_type"]
+                t = trn(dp, cluster_id, cache_results=False)
+                ISIs = isi(dp, cluster_id)
+                instant_cv2 = inst_cv2(t)
+                av_firing_rate = mean_firing_rate(t)
+                cv = compute_cv(t)
+    
+                data_entry = [cluster_id, av_firing_rate, np.mean(cv), np.mean(instant_cv2), np.median(ISIs)]
+                session_data[cell_type].append(data_entry)
+                if not sess == "SwitchSessionStitching":
+                    all_sessions_data_plot[cell_type].append(data_entry)
+                data_entry = [sess, cluster_id, cell_type, av_firing_rate, np.mean(cv), np.mean(instant_cv2), np.median(ISIs)]
+                session_data_stats.append(data_entry)
+                all_sessions_data_stats.append(data_entry)
 
         # Save per-session TSV
         df_session = pd.DataFrame(session_data_stats, columns=["Session", "Cluster ID", "Cell Type", "Mean Firing Rate", "Mean CV", "Mean CV2", "Median ISI"])
@@ -166,21 +190,23 @@ def get_discharge_statistics(mouse_name = "Iowa"
         df_session.to_csv(session_tsv, sep="\t", index=False)
         print(f"Session statistics saved to {session_tsv}")
         
-        if session_data:
+        if not all(not v for v in session_data.values()):
             # Save session boxplots
             session_plot = os.path.join(save_path, f"{sess}_discharge_boxplots.png")
             save_boxplots(session_data, session_plot, f"Discharge Statistics - {sess}")
-
-    # Save overall statistics
-    df_overall = pd.DataFrame(all_sessions_data_stats, columns=["Session", "Cluster ID", "Cell Type", "Mean Firing Rate", "Mean CV", "Mean CV2", "Median ISI"])
-    overall_tsv = os.path.join(save_base, f"{mouse_name}_overall_discharge_stats.tsv")
-    df_overall.to_csv(overall_tsv, sep="\t", index=False)
-    print(f"Overall statistics saved to {overall_tsv}")
-
-    if all_sessions_data_plot:
-        # Save combined boxplots
-        overall_plot = os.path.join(save_base, f"{mouse_name}_overall_discharge_boxplots.png")
-        save_boxplots(all_sessions_data_plot, overall_plot, "Overall Discharge Statistics")
+        else:
+            print(f"No neurons found in session {sess}, not making boxplot figure...")
+    if update_final_fig:
+        # Save overall statistics
+        df_overall = pd.DataFrame(all_sessions_data_stats, columns=["Session", "Cluster ID", "Cell Type", "Mean Firing Rate", "Mean CV", "Mean CV2", "Median ISI"])
+        overall_tsv = os.path.join(save_base, f"{mouse_name}_overall_discharge_stats.tsv")
+        df_overall.to_csv(overall_tsv, sep="\t", index=False)
+        print(f"Overall statistics saved to {overall_tsv}")
+    
+        if all_sessions_data_plot:
+            # Save combined boxplots
+            overall_plot = os.path.join(save_base, f"{mouse_name}_overall_discharge_boxplots.png")
+            save_boxplots(all_sessions_data_plot, overall_plot, "Overall Discharge Statistics")
         
     return all_sessions_data_stats
     
@@ -223,18 +249,17 @@ def main(mouse_name=None
         mice = [mouse_name]
         
     for mouse_name in mice:
-        if not again and os.path.isfile(os.path.join(save_directory, mouse_name, f"{mouse_name}_overall_discharge_stats.tsv")):
-            continue
+
         if "ReserveMouse" in mouse_name:
             dp_base = directory.replace("MainFolder", "ReserveFolder")
         else:
             dp_base = directory
         discharge_statistics = []
         if os.path.exists(os.path.join(dp_base,mouse_name)):
-            try:
-                discharge_statistics = get_discharge_statistics(mouse_name, switch_sessions, contamination_ratio, confidence_ratio_threshold)
-            except:
-                continue    
+            #try:
+                discharge_statistics = get_discharge_statistics(mouse_name, switch_sessions, contamination_ratio, confidence_ratio_threshold, again=again)
+            #except:
+            #    continue    
         else:
             print(f"Data for {mouse_name} not found. Probably not synced to this computer. Skipping...")
             continue

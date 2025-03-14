@@ -1,5 +1,6 @@
-mouse_names = ["Jackson", "Flint", "Greene", "Houston", "Iowa", "Missouri", "Newark", "Orleans", "Pittsburg","Quimper", "Uppsala", "ReserveMouse3", "Seattle", "Madrid", "Zurich", "Yosemite", "Lisbon", "York", "Xanthi", "Amsterdam", "Ana2", "Ana4", "Ana5", "Copenhagen", "Istanbul", "Kyiv", "Porto", "Queens", "Reno", "Rotterdam", "Tallinn", "Venice", "Willemstad", "Zachary", "Dallas"];
+mouse_names = [ "Dallas", "Uppsala", "ReserveMouse3", "Seattle", "Madrid", "Zurich", "Yosemite", "Lisbon", "York", "Xanthi", "Amsterdam", "Ana2", "Ana4", "Ana5", "Copenhagen", "Istanbul", "Kyiv", "Porto", "Queens", "Reno", "Rotterdam", "Tallinn", "Venice", "Willemstad", "Zachary"];
 %mouse_names = ["Ana4"];
+% done = ["Iowa", "Jackson", "Flint", "Greene", "Houston",  "Missouri", "Newark", "Orleans", "Pittsburg","Quimper",]
 
 for m = 1:length(mouse_names)
     try

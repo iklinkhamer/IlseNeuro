@@ -148,7 +148,7 @@ def main(mouse_name=None,
          directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/"),
          alt_directory=os.path.join(get_dropbox_path(),"AnalysisOutput/c4 results stats/"),
          save_dir=os.path.join(get_dropbox_path(), "AnalysisOutput/Cell_type_counts/"),
-         inspectAgain=True):    
+         inspectAgain=False):    
        
     
     save_dir = os.path.join(save_dir,f"fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}")
@@ -185,7 +185,7 @@ def main(mouse_name=None,
                     and "Copy" not in folder
                 ]
             alt_mouse_folders = []
-            if os.path.exists(dp_base):
+            if os.path.exists(alt_dp_base):
                 alt_mouse_folders = [
                     folder for folder in os.listdir(alt_dp_base)
                     if os.path.isdir(os.path.join(alt_dp_base, folder)) 
