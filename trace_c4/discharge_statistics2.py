@@ -21,8 +21,8 @@ from mouseUtils import getMouseFolders
 from scipy.stats import zscore
 
 def save_boxplots(all_sessions_data, save_path, title, show_outliers=False):
-    """Generate and save boxplots with scatter overlay for ISI, CV2, and firing rate.
-    
+    """Generate and save a single boxplot figure with all metrics and individual data points.
+
     Arguments:
         - all_sessions_data: dict, structured spike metrics
         - save_path: str, where to save the plot
@@ -31,77 +31,93 @@ def save_boxplots(all_sessions_data, save_path, title, show_outliers=False):
     """
     metrics = ["Mean Firing Rate", "Mean CV", "Mean CV2", "Median ISI"]
     fixed_order = ["PkC_ss", "PkC_cs", "MLI", "GoC", "MFB"]  # Fixed order (if present)
-    fig, axes = plt.subplots(1, 4, figsize=(18, 5))
+    
+    fig, ax = plt.subplots(figsize=(12, 6))  # Single axis for all plots
     
     color_map = c4_colors_rgb() 
     color_map['PkC_cs'] = lighten(color_map['PkC_cs'])
     color_map = normalize_RGB_dict(color_map)
 
+    all_box_data = []
+    positions = []
+    color_list = []
+
+    scatter_x = []
+    scatter_y = []
+    scatter_colors = []
+
+    metric_positions = []  # To store x positions for metric labels
+
+    # Process each metric
     for i, metric in enumerate(metrics):
-        # Extract data, keeping only present cell types
         data = {cell_type: [entry[i+1] for entry in values] for cell_type, values in all_sessions_data.items()}
         df = pd.DataFrame({k: pd.Series(v) for k, v in data.items() if len(v) > 0})
 
-        # Keep only present cell types but in the correct order
         present_cell_types = [ct for ct in fixed_order if ct in df.columns]
-        df = df[present_cell_types]  # Reorder columns, drop missing ones
+        df = df[present_cell_types]  # Keep only present cell types in order
 
         # Identify outliers using IQR
-        outliers_dict = {}
         filtered_data = {}
-
         for cell_type in present_cell_types:
             y = df[cell_type].dropna()
-
-            # Compute IQR bounds
-            Q1 = y.quantile(0.25)
-            Q3 = y.quantile(0.75)
+            Q1, Q3 = y.quantile(0.25), y.quantile(0.75)
             IQR = Q3 - Q1
-            lower_bound = Q1 - 1.5 * IQR
-            upper_bound = Q3 + 1.5 * IQR
-
-            # Identify and store outliers
-            outliers = y[(y < lower_bound) | (y > upper_bound)]
-            outliers_dict[cell_type] = outliers.tolist()
-
-            # Keep only non-outlier data
+            lower_bound, upper_bound = Q1 - 1.5 * IQR, Q3 + 1.5 * IQR
             filtered_data[cell_type] = y[(y >= lower_bound) & (y <= upper_bound)]
 
-        # Print detected outliers
-        for cell_type, outliers in outliers_dict.items():
-            if outliers:
-                print(f"Outliers in {metric} ({cell_type}): {outliers}")
-
-        # Boxplot with only present cell types
-        box_data = [df[col].dropna() if show_outliers else filtered_data.get(col, []) for col in present_cell_types]
-        box = axes[i].boxplot(box_data, patch_artist=True, labels=present_cell_types, showfliers=show_outliers)
-
-        # Modify boxplot colors
-        for patch, cell_type in zip(box["boxes"], present_cell_types):
-            patch.set_facecolor(color_map.get(cell_type, "gray"))
-            patch.set_alpha(0.5)
-
-        # Modify median line to be thick and black
-        for median in box["medians"]:
-            median.set_color("black")
-            median.set_linewidth(2.5)
-
-        # Overlay scatter points (only non-outliers)
+        # Prepare boxplot data
+        metric_x_positions = []
         for j, cell_type in enumerate(present_cell_types):
-            y = filtered_data[cell_type]
-            x = np.random.normal(j + 1, 0.04, size=len(y))  # Add jitter
-            axes[i].scatter(x, y, facecolors=color_map.get(cell_type, "gray"), edgecolors="none", s=30, alpha=1)
+            x_pos = i * 1.5 + j * 0.25  # Adjust spacing so groups stay together
+            metric_x_positions.append(x_pos)
+            all_box_data.append(filtered_data[cell_type])
+            positions.append(x_pos)
+            color_list.append(color_map.get(cell_type, "gray"))
 
-        axes[i].set_title(metric)
-        axes[i].set_ylim(-3, 6)  # Set y-axis limits
-        axes[i].set_ylabel("Feature value (z-score)")  # Set y-axis label
+            # Scatter data points (closer to center)
+            y_values = filtered_data[cell_type]
+            x_values = np.random.normal(x_pos, 0.005, size=len(y_values))  # Keep jitter minimal
 
+            scatter_x.extend(x_values)
+            scatter_y.extend(y_values)
+            scatter_colors.extend([color_map.get(cell_type, "gray")] * len(y_values))
+
+        # Pick the middle boxplot position for x-axis labels
+        if metric_x_positions:
+            middle_pos = metric_x_positions[len(metric_x_positions) // 2]
+            metric_positions.append(middle_pos)
+
+    # Create boxplot
+    box = ax.boxplot(all_box_data, patch_artist=True, positions=positions, widths=0.1, showfliers=show_outliers)
+
+    # Set colors for boxplots
+    for patch, color in zip(box["boxes"], color_list):
+        patch.set_facecolor(color)
+        patch.set_alpha(0.5)
+
+    for median in box["medians"]:
+        median.set_color("black")
+        median.set_linewidth(2.5)
+
+    # Scatter plot overlay (points are now more centered)
+    ax.scatter(scatter_x, scatter_y, color=scatter_colors, edgecolors="none", s=30, alpha=0.9)
+
+    # Add legend for cell types
+    legend_handles = [plt.Line2D([0], [0], color=color_map[cell], lw=4, label=cell) for cell in fixed_order if cell in color_map]
+    ax.legend(handles=legend_handles, title="Cell Types")
+
+    # Set x-axis labels under the middle boxplot for each metric
+    ax.set_xticks(metric_positions)
+    ax.set_xticklabels(metrics)
+
+    ax.set_ylim(-3, 6)  # Y-axis limits
+    ax.set_ylabel("Feature value (z-score)")
+    ax.set_title(title)
 
     plt.tight_layout()
     plt.savefig(save_path)
     plt.close()
     print(f"Boxplots saved to {save_path}")
-
 
 
 
@@ -112,6 +128,7 @@ def get_discharge_statistics(mouse_name = "Iowa"
                              , directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
                              , save_directory=os.path.join(get_dropbox_path(), "AnalysisOutput/c4 results stats/")
                              , again=False
+                             , fig_output_types=[".png", ".eps"]
                              ):
     dp_base = os.path.join(directory, mouse_name)
     if "ReserveMouse" in mouse_name:
@@ -202,8 +219,9 @@ def get_discharge_statistics(mouse_name = "Iowa"
             
         if any(len(v) > 0 for v in session_data.values()):
             # Save session boxplots
-            session_plot = os.path.join(save_path, f"{sess}_discharge_boxplots.png")
-            save_boxplots(session_data, session_plot, f"Discharge Statistics - {sess}")
+            for ext in fig_output_types:
+                session_plot = os.path.join(save_path, f"{sess}_discharge_boxplots_zscore{ext}")
+                save_boxplots(session_data, session_plot, f"discharge Statistics - {sess}")
         else:
             print(f"No neurons found in session {sess}, not making boxplot figure...")
     if update_final_fig:
@@ -222,8 +240,9 @@ def get_discharge_statistics(mouse_name = "Iowa"
 
         if all_sessions_data_plot:
             # Save combined boxplots
-            overall_plot = os.path.join(save_base, f"{mouse_name}_overall_discharge_boxplots.png")
-            save_boxplots(all_sessions_data_plot, overall_plot, "Overall Discharge Statistics")
+            for ext in fig_output_types:
+                overall_plot = os.path.join(save_base, f"{mouse_name}_overall_discharge_boxplots_zscore{ext}")
+                save_boxplots(all_sessions_data_plot, overall_plot, "Overall discharge Statistics")
         
     return all_sessions_data_stats
     
@@ -242,6 +261,46 @@ def compute_cv(t):
 
     isis = np.diff(t)  # Compute interspike intervals
     return np.std(isis) / np.mean(isis)  # CV formula
+
+def summarize_discharge_statistics(mice, save_directory, fig_output_types=[".png", ".eps"]):
+    """Aggregate and plot discharge statistics for all mice together and save as a TSV."""
+    
+    all_mice_data = defaultdict(list)
+    all_mice_stats = []
+
+    # Exclude "Ana" mice
+    filtered_mice = [mouse for mouse in mice if not mouse.startswith("Ana")]
+
+    for mouse in filtered_mice:
+        overall_stats_path = os.path.join(save_directory, mouse, f"{mouse}_overall_discharge_stats.tsv")
+        if os.path.isfile(overall_stats_path):
+            df = pd.read_csv(overall_stats_path, sep="\t")
+            for _, row in df.iterrows():
+                if not row["Session"]=="SwitchSessionStitching":
+                    cell_type = row["Cell Type"]
+                    data_entry = [row["Cluster ID"], row["Mean Firing Rate"], row["Mean CV"], row["Mean CV2"], row["Median ISI"]]
+                    all_mice_data[cell_type].append(data_entry)
+                    all_mice_stats.append(row.tolist())  # Store for saving
+        else:
+            print(f"Skipping {mouse}, no overall discharge file found.")
+
+    # Convert to numpy and apply Z-score
+    for cell_type in all_mice_data:
+        all_mice_data[cell_type] = np.array(all_mice_data[cell_type])
+        all_mice_data[cell_type][:, 1:] = zscore(all_mice_data[cell_type][:, 1:], axis=0, nan_policy='omit')
+
+    # Save the summary plot
+    for ext in fig_output_types:
+        save_path_plot = os.path.join(save_directory, f"AllMice_overall_discharge_boxplots_zscore{ext}")
+        save_boxplots(all_mice_data, save_path_plot, "Overall discharge Statistics for All Mice (Excluding Ana Mice)")
+
+    # Save summary statistics as a TSV file
+    if all_mice_stats:
+        df_summary = pd.DataFrame(all_mice_stats, columns=["Session", "Cluster ID", "Cell Type", "Mean Firing Rate", "Mean CV", "Mean CV2", "Median ISI"])
+        save_path_tsv = os.path.join(save_directory, "AllMice_overall_discharge_stats.tsv")
+        df_summary.to_csv(save_path_tsv, sep="\t", index=False)
+        print(f"Summary statistics saved to {save_path_tsv}")
+
     
 def main(mouse_name=None
          , switch_sessions=True
@@ -265,6 +324,8 @@ def main(mouse_name=None
     else:
         mice = [mouse_name]
         
+    summarize_discharge_statistics(mice, save_directory)
+    
     for mouse_name in mice:
 
         if "ReserveMouse" in mouse_name:
@@ -273,13 +334,15 @@ def main(mouse_name=None
             dp_base = directory
         discharge_statistics = []
         if os.path.exists(os.path.join(dp_base,mouse_name)):
-            #try:
+            try:
                 discharge_statistics = get_discharge_statistics(mouse_name, switch_sessions, contamination_ratio, confidence_ratio_threshold, again=again)
-            #except:
-            #    continue    
+            except:
+                continue    
         else:
             print(f"Data for {mouse_name} not found. Probably not synced to this computer. Skipping...")
             continue
+        
+    
 
                 #sys.exit(1)
     #discharge_statistics = get_discharge_statistics(mouse_name, switch_sessions, contamination_ratio, confidence_ratio_threshold)

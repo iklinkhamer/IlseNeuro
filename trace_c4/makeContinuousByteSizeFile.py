@@ -12,7 +12,7 @@ from get_dropbox_path import get_dropbox_path
 switch_sessions = True
 directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
 continuous_dir = os.path.join(get_dropbox_path(), "C4_conversion")
-mouse_name = "Copenhagen"
+mouse_name = "ReserveMouse3"
 continuous_path = os.path.join(continuous_dir, mouse_name)
 data_folder = "continuous/Data_AP_LFP/"
 data_file = "continuous.dat"
@@ -39,15 +39,14 @@ if switch_sessions:
         mouse_folders.append(switch_folder)
 
 for folder in mouse_folders:
-    byte_size_file = os.path.getsize(os.path.join(continuous_path, folder, data_folder, data_file))
-    byte_size_file_path = os.path.join(os.path.join(continuous_path, folder))
-    print(byte_size_file)
-    byte_size_file_save_location = os.path.join(directory, mouse_name, folder, "c4")
+    byte_size = os.path.getsize(os.path.join(continuous_path, folder, data_folder, data_file))
+    byte_size_file_path = os.path.join(continuous_path, folder)
+    print(byte_size)
+    byte_size_file_save_location = os.path.join(dp_base, folder, "c4")
     if os.path.exists(byte_size_file_save_location):
         with open(f"{byte_size_file_save_location}/byte_size_continuous_file.txt", "w") as f:
-            f.write(str(byte_size_file))
-    else:
-        print(f"{mouse_name} data folder not synchronized to computer")
-        with open(f"{byte_size_file_path}/byte_size_continuous_file.txt", "w") as f:
-            f.write(str(byte_size_file))
+            f.write(str(byte_size))    
+    print(f"{mouse_name} data folder not synchronized to computer")
+    with open(f"{byte_size_file_path}/byte_size_continuous_file.txt", "w") as f:
+        f.write(str(byte_size))
             

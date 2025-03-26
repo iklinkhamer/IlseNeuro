@@ -81,7 +81,7 @@ def run_cell_types_classifier_wrapper(mouse_name
 
 
 
-        run_cell_types_classifier(dp, quality = 'all', parallel = False, fp_threshold = contamination_ratio, fn_threshold = contamination_ratio, threshold = confidence_ratio_threshold, save_path = save_path)
+        run_cell_types_classifier(dp, quality = 'all', parallel = False, fp_threshold = contamination_ratio, fn_threshold = contamination_ratio, threshold = confidence_ratio_threshold, save_path = save_path, cache_path=)
 
         # if any test fails, re-run them with the following to print the error log, and try to fix it or post an issue on github:
         #run_cell_types_classifier(dp, raise_error=True)

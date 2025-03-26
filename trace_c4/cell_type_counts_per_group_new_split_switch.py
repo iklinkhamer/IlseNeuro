@@ -164,7 +164,7 @@ def main(contamination_ratio=0.1, confidence_ratio_threshold=1.5):
         for mouse in mice:
             file_info = mouse_files[group][mouse]
             file_path = file_info["file"]
-            first_wide_session = file_info["first_wide_session"]  # This is None for Naive and other groups
+            first_wide_session = file_info["first_wide_session"]  # This is None for Wide, Narrow and Bimodal
             
             cell_type_counts = read_tsv(file_path)
             if cell_type_counts.empty:
@@ -209,6 +209,45 @@ def main(contamination_ratio=0.1, confidence_ratio_threshold=1.5):
 
     # Replace NaN values with zero
     results_df = results_df.fillna(0).astype(int)
+    
+    # Generate and save plots
+   
+    GoCs= 0
+    MFBs=0
+    PkC_sss=0
+    PkC_css=0
+    MLIs=0
+ 
+    for group, counts in results_df.items():
+        labels = [f"{cell_type} ({count})" for cell_type, count in counts.items()]
+        if not group in ["SingleNaive", "WideNaive"]:
+            GoCs+=counts.GoC
+            MFBs+=counts.MFB
+            PkC_css+=counts.PkC_cs
+            PkC_sss+=counts.PkC_ss
+            MLIs+=counts.MLI            
+        else:
+            a = 1
+    results_all_mice = {
+        'Index': ['GoC', 'MFB', 'MLI', 'PkC_cs', 'PkC_ss'],
+        'AllMice': [GoCs, MFBs, MLIs, PkC_css, PkC_sss]
+        }
+    results_all_mice_df = pd.DataFrame(results_all_mice)
+    results_all_mice_df = results_all_mice_df.set_index('Index')
+        
+    pie_chart_path = os.path.join(counts_folder, f"aaa_overall_pie_chart_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.png")
+        
+    plot_pie_charts(results_all_mice_df, pie_chart_path)
+        
+    pie_chart_path = os.path.join(counts_folder, f"aaa_overall_pie_chart_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.eps")
+      
+    plot_pie_charts(results_all_mice_df, pie_chart_path)
+    
+    # Save to file in counts_folder
+    output_file = os.path.join(counts_folder, f"aaa_overall_all_cell_type_totals_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.tsv")
+    results_all_mice_df.to_csv(output_file, sep='\t')
+    print(f"Saved cell type totals to {output_file}")
+    
 
     # Save to file in counts_folder
     output_file = os.path.join(counts_folder, f"all_cell_type_totals_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.tsv")
@@ -222,12 +261,22 @@ def main(contamination_ratio=0.1, confidence_ratio_threshold=1.5):
     plot_pie_charts(results_df, pie_chart_path)
     plot_grouped_bar_chart(results_df, bar_chart_path)
     
+    pie_chart_path = os.path.join(counts_folder, f"all_groups_pie_chart_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.eps")
+    bar_chart_path = os.path.join(counts_folder, f"all_groups_bar_chart_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.eps")
+    
+    plot_pie_charts(results_df, pie_chart_path)
+    plot_grouped_bar_chart(results_df, bar_chart_path)
+    
     print(f"Saved pie chart to {pie_chart_path}")
     print(f"Saved bar chart to {bar_chart_path}")
 
     per_mouse_chart_path = os.path.join(counts_folder, f"all_per_mouse_bar_chart_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.png")
     plot_per_mouse_group_bar_chart(total_counts_per_mouse, per_mouse_chart_path)
     print(f"Saved per-mouse-group bar chart to {per_mouse_chart_path}")
+    per_mouse_chart_path = os.path.join(counts_folder, f"all_per_mouse_bar_chart_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.eps")
+    plot_per_mouse_group_bar_chart(total_counts_per_mouse, per_mouse_chart_path)
+
+    
     
 if __name__ == "__main__":
     main()

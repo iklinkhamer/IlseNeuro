@@ -47,7 +47,7 @@ nRasterPlots = 1;
 nPlotsPerAlignment = nRasterPlots+nPsthPlots;
 nAlignments = numel(["CS", "US"]);
 
-
+subfolder
 [axs, fig] = JkUtils.initPlots([nPlotsPerAlignment nAlignments]);
 rasterAxes = axs(1,:);
 psthAxes = axs(2:end,:);
