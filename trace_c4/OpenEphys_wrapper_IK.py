@@ -20,7 +20,13 @@ def convertOpenEphysDataToContinuous(   mouse_name
                                      ,  switch_sessions=False
                                      ,  channels=list(range(1,33))
                                      ,  directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
+                                     ,  data_folder = "Data"
+                                     ,  source_folder_name = "Extraction2Bin"
+                                     ,  session_folder_pattern = ""
                                      ):
+    
+    if not session_folder_pattern:
+        session_folder_pattern = mouse_name
 
     dp_base = os.path.join(directory, mouse_name)
     if "ReserveMouse" in mouse_name:
@@ -30,7 +36,7 @@ def convertOpenEphysDataToContinuous(   mouse_name
     mouse_folders = [
         folder for folder in os.listdir(dp_base)
         if os.path.isdir(os.path.join(dp_base, folder))
-           and mouse_name in folder
+           and session_folder_pattern in folder
            and "copy" not in folder
            and "Copy" not in folder
     ]
@@ -46,7 +52,7 @@ def convertOpenEphysDataToContinuous(   mouse_name
                 switch_folder_name = "SwitchSessionStitching"                
                 mouse_folders.append(switch_folder_name)    
             else:
-                switch_folder_data_file = os.path.join(switch_folder, "Data", "100_CH32.continuous")
+                switch_folder_data_file = os.path.join(switch_folder, data_folder, "100_CH32.continuous")
                 if not os.path.exists(switch_folder_data_file):
                     try:
                         stitch_CH_continuous_files_switch_sessions.main(mouse_name)
@@ -68,7 +74,7 @@ def convertOpenEphysDataToContinuous(   mouse_name
         print(f"Processing folder: {foldername}")
         
         # Perform actions on each folder here
-        source_folder = os.path.join(dp_base, foldername, "Data")
+        source_folder = os.path.join(dp_base, foldername, data_folder)
         destination_folder = os.path.join(dp_base, foldername, "c4", "continuous", "Data_AP_LFP")
         
         # Define file paths
@@ -119,16 +125,16 @@ def convertOpenEphysDataToContinuous(   mouse_name
             
         # copy the content of the Extraction2Bin folder to the c4 folder
         # Define paths
-        source_folder = os.path.join(dp_base, foldername, "Extraction2Bin")
+        source_folder = os.path.join(dp_base, foldername, source_folder_name)
         destination_folder = os.path.join(dp_base, foldername, "c4")
         
         # Define the files to exclude
-        #excluded_files = {'Data4KS2.bin', 'temp_wh.dat', 'rez.mat', 'pc_features.npy', 'template_features.npy'}  # Add all filenames to exclude
-        included_files = {'amplitudes.npy', 'cluster_group.tsv', 'params.py', 'spike_clusters.npy', 'spike_times.npy'}
+        excluded_files = {'Data4KS2.bin', 'temp_wh.dat', 'rez.mat', 'pc_features.npy', 'template_features.npy'}  # Add all filenames to exclude
+        #included_files = {'amplitudes.npy', 'cluster_group.tsv', 'params.py', 'spike_clusters.npy', 'spike_times.npy'}
         
         def ignore_files(dir, files):
             """Custom ignore function to exclude specific files."""
-            return {file for file in files if file not in included_files}
+            return {file for file in files if file in excluded_files}
         
         # Copy the folder, excluding the specified files
         if os.path.exists(source_folder):
@@ -138,12 +144,17 @@ def convertOpenEphysDataToContinuous(   mouse_name
                 dirs_exist_ok=True,  # Allow overwriting if destination exists (Python 3.8+)
                 ignore=ignore_files
             )
-            print(f"Contents of {source_folder} copied to {destination_folder}, including {included_files}")
+            print(f"Contents of {source_folder} copied to {destination_folder}")
         else:
             print(f"Source folder does not exist: {source_folder}")
             
 def main(   mouse_name="Dallas"
-         ,  switch_sessions=True):
+         ,  switch_sessions=True
+         ,  directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
+         ,  data_folder = "Data"
+         ,  source_folder_name = "Extraction2Bin"
+         ,  session_folder_pattern = ""
+         ):
     if mouse_name is None:
         if len(sys.argv) > 1:
             mouse_name = sys.argv[1]
@@ -152,6 +163,10 @@ def main(   mouse_name="Dallas"
             sys.exit(1)
     convertOpenEphysDataToContinuous(   mouse_name
                                      ,  switch_sessions=switch_sessions
+                                     , directory = directory
+                                     , data_folder = data_folder
+                                     , source_folder_name = source_folder_name
+                                     , session_folder_pattern = session_folder_pattern
                                      )    
         
 if __name__ == "__main__":

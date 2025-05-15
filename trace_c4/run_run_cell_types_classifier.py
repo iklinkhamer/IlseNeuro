@@ -28,8 +28,13 @@ def run_cell_types_classifier_wrapper(mouse_name
                                       ,contamination_ratio=0.1
                                       ,confidence_ratio_threshold=2
                                       ,directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
+                                      ,cache_dir=os.path.join(os.path.dirname(get_dropbox_path().rstrip("/")), "C4 Cache")
+                                      , dat_dir=os.path.join(get_dropbox_path(), "C4_conversion")
+                                      , session_folder_pattern = ""
                                       ,skip_without_continuous=True):
 
+    if not session_folder_pattern:
+        session_folder_pattern = mouse_name
 
     # any spike sorted recording compatible with phy
     # (e.g. kilosort output)
@@ -41,7 +46,7 @@ def run_cell_types_classifier_wrapper(mouse_name
     mouse_folders = [
         folder for folder in os.listdir(dp_base)
         if os.path.isdir(os.path.join(dp_base, folder))
-           and mouse_name in folder
+           and session_folder_pattern in folder
            and "copy" not in folder
            and "Copy" not in folder
     ]
@@ -60,13 +65,12 @@ def run_cell_types_classifier_wrapper(mouse_name
         print(f"Processing folder: {sess_oebin}")
 
         #if sess_oebin != "Ana3_20190531193955":
-        #    continue
+        #   continue
 
         dp = path.join(dp_base, sess_oebin, phy_folder)
         cla_res_path = path.join(dp_base, sess_oebin, phy_folder, "cell_type_classification")
         save_path = os.path.join(dp, f"c4_results_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}")
         results_file_path = os.path.join(save_path, "cluster_predicted_cell_type.tsv")
-
 
         if not os.path.exists(dp):
             print(f"Folder {dp} does not exist, skipping c4 analysis.")
@@ -79,22 +83,35 @@ def run_cell_types_classifier_wrapper(mouse_name
             continue
         os.makedirs(save_path, exist_ok=True)
 
+        cache_path = os.path.join(cache_dir, mouse_name, sess_oebin, ".NeuroPyxels")
+        os.makedirs(cache_path, exist_ok=True)
+
+        dat_path = os.path.join(dat_dir, mouse_name, sess_oebin)
+        if not os.path.exists(os.path.join(dat_path, "continuous")):
+            dat_path = os.path.join(dat_path, phy_folder)
+            if not os.path.exists(os.path.join(dat_path, "continuous")):
+                print("continuous folder not found in data path folder, so please check.")
 
 
-        run_cell_types_classifier(dp, quality = 'all', parallel = False, fp_threshold = contamination_ratio, fn_threshold = contamination_ratio, threshold = confidence_ratio_threshold, save_path = save_path, cache_path=)
+        run_cell_types_classifier(dp, quality = 'all', parallel = False, fp_threshold = contamination_ratio, fn_threshold = contamination_ratio, threshold = confidence_ratio_threshold, save_path = save_path, cache_path=cache_path, dat_path=dat_path)
 
         # if any test fails, re-run them with the following to print the error log, and try to fix it or post an issue on github:
         #run_cell_types_classifier(dp, raise_error=True)
 
 
-def main(mouse_name="Ana3", classify_again=True, switch_sessions=True, contamination_ratio=0.1, confidence_ratio_threshold=1.5):
+def main(mouse_name="ReserveMouse3", classify_again=True, switch_sessions=True, contamination_ratio=0.1, confidence_ratio_threshold=1.5
+         , directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
+         , cache_dir=os.path.join(os.path.dirname(get_dropbox_path().rstrip("/")), "C4 Cache")
+         , dat_dir=os.path.join(get_dropbox_path(), "C4_conversion")
+         , session_folder_pattern = ""
+         ):
     if mouse_name is None:
         if len(sys.argv) > 1:
             mouse_name = sys.argv[1]
         else:
             print("Error: No mouse name provided")
             sys.exit(1)
-    run_cell_types_classifier_wrapper(mouse_name, classify_again, switch_sessions, contamination_ratio, confidence_ratio_threshold)
+    run_cell_types_classifier_wrapper(mouse_name, classify_again, switch_sessions, contamination_ratio, confidence_ratio_threshold, directory=directory, cache_dir=cache_dir, dat_dir=dat_dir, session_folder_pattern = session_folder_pattern)
 
 
 if __name__ == "__main__":
