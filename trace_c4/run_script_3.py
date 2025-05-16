@@ -24,6 +24,7 @@ import shutil
 def main(mouse_name="Georgetown_Cbx"
          , directory = os.path.join(os.path.dirname(os.path.dirname(get_dropbox_path())), "ContextMouseExperiments/Ilse/ephys")
          , continuous_directory = os.path.join(os.path.dirname(os.path.dirname(get_dropbox_path())), "ContextMouseExperiments/Ilse/ephys")
+         , source_folder_name = "kilosort"
          ):
     if mouse_name is None:
         if len(sys.argv) > 1:
@@ -37,14 +38,15 @@ def main(mouse_name="Georgetown_Cbx"
 
     switch_sessions = True
     classify_again = True
-
+    OpenEphys_wrapper_IK.main(mouse_name, switch_sessions=switch_sessions, directory=directory,
+                              source_folder_name=source_folder_name)
     run_run_cell_types_classifier.main(mouse_name, classify_again=classify_again, switch_sessions=switch_sessions,
                                        contamination_ratio=0.1, confidence_ratio_threshold=1.5, directory=directory,
                                        dat_dir=continuous_directory, session_folder_pattern=mouse_name[0])
 
     try:
         print("Converting openephys output to continuous output")
-        #OpenEphys_wrapper_IK.main(mouse_name, switch_sessions=switch_sessions, directory=directory)
+        OpenEphys_wrapper_IK.main(mouse_name, switch_sessions=switch_sessions, directory=directory, source_folder_name=source_folder_name)
         print("Running c4 analysis")
         run_run_cell_types_classifier.main(mouse_name, classify_again=classify_again, switch_sessions=switch_sessions, contamination_ratio=0.1, confidence_ratio_threshold=1.5, directory = directory, dat_dir = continuous_directory)
         print("Copying c4 output files to Analysis Output")
