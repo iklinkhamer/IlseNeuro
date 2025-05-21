@@ -222,7 +222,8 @@ def main(phy_compatible_c4_folder=os.path.join(select_folder("Select the phy com
         if os.path.isdir(full_path):
             session_name, mouse_name = find_session_and_mouse_name(full_path)
             if session_name is not None and mouse_name is not None:
-                full_path = os.path.join(full_path, "c4")
+                if "c4" not in full_path:
+                    full_path = os.path.join(full_path, "c4")
                 subfolders.append(full_path)
                 subfolders.sort()
 
