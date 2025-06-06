@@ -89,7 +89,7 @@ def read_tsv(file_path):
 
 def plot_pie_charts(total_counts_per_cell_type, save_path):
     """Plot and save pie charts for all mouse groups in one figure."""
-    num_groups = total_counts_per_cell_type.shape[1]
+    num_groups = total_counts_per_cell_type.shape[0 if isinstance(total_counts_per_cell_type, pd.Series) else 1]
     fig, axes = plt.subplots(1, num_groups, figsize=(num_groups * 5, 5))
     
     if num_groups == 1:
@@ -111,7 +111,7 @@ def plot_pie_charts(total_counts_per_cell_type, save_path):
     for ax, (group, counts) in zip(axes, total_counts_per_cell_type.items()):
         labels = [f"{cell_type} ({count})" for cell_type, count in counts.items()]
         colors = [color_map.get(cell_type, 'gray') for cell_type in counts.index]
-        ax.pie(counts, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140)
+        ax.pie(counts.values, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140)
         ax.set_title(group)
     
     plt.tight_layout()
@@ -183,27 +183,35 @@ def countCellTypesSession(results_file=None, session=None):
     else:
         return
     
-    return c4_results
+    c4_counts = c4_results['predicted_cell_type'].value_counts()
+    counts_df = c4_counts.reset_index()
+    counts_df.columns = ['cell_type', 'count']
+    #counts_df = counts_df.T
+    
+    return c4_results, counts_df, c4_counts
             
             
 def main(results_file_or_folder=None,contamination_ratio=0.1,
-         confidence_ratio_threshold=1.5):
-    
-    if not results_file_or_folder:
+         confidence_ratio_threshold=1.5, select_folder=False):
+    dropbox_path = get_dropbox_path()
+    if not results_file_or_folder and select_folder:
         results_file_or_folder = select_file_or_folder(
             "Select the cell type",
             start_path="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/ContextMouseExperiments/Ilse/ephys/"
         )  
-    dropbox_path = get_dropbox_path()
+    elif not results_file_or_folder:
+        results_file_or_folder = os.path.join(dropbox_path, "/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/ContextMouseExperiments/Ilse/ephys/")
+        
+
     print(dropbox_path)    
     counts_folder = os.path.join(dropbox_path, f"ContextMouseExperiments/Ilse/AnalysisOutput/Cell_type_counts/fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}/")
     os.makedirs(counts_folder, exist_ok=True)
     if os.path.isfile(results_file_or_folder):
         results_file = results_file_or_folder    
         session_name, mouse_name = find_session_and_mouse_name(results_file)
-        cell_type_counts = countCellTypesSession(results_file)
+        c4_results, cell_type_counts, c4_counts = countCellTypesSession(results_file)
         pie_chart_path = os.path.join(counts_folder, f"{session_name}_pie_chart_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.png")
-        plot_pie_charts(cell_type_counts, pie_chart_path)
+        plot_pie_charts(c4_counts, pie_chart_path)
         a = 1
     else:        
         mouse_directory = results_file_or_folder
