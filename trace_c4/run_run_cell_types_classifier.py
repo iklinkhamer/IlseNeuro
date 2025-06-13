@@ -17,7 +17,7 @@ font_manager.fontManager.addfont(font_path) # Add the font to Matplotlib's font 
 import sys
 import npyx
 
-from get_dropbox_path import get_dropbox_path
+from get_dropbox_path_2 import get_dropbox_path
 from npyx.c4.predict_cell_types import run_cell_types_classifier
 from os import path
 import os
@@ -27,9 +27,9 @@ def run_cell_types_classifier_wrapper(mouse_name
                                       ,switch_sessions=False
                                       ,contamination_ratio=0.1
                                       ,confidence_ratio_threshold=2
-                                      ,directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
-                                      ,cache_dir=os.path.join(os.path.dirname(get_dropbox_path().rstrip("/")), "C4 Cache")
-                                      , dat_dir=os.path.join(get_dropbox_path(), "C4_conversion")
+                                      ,directory=os.path.join(get_dropbox_path(),"TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/")
+                                      ,cache_dir=os.path.join(get_dropbox_path(), "C4 Cache")
+                                      , dat_dir=os.path.join(get_dropbox_path(), "TraceExperiments/C4_conversion")
                                       , session_folder_pattern = ""
                                       ,skip_without_continuous=True):
 
@@ -100,7 +100,7 @@ def run_cell_types_classifier_wrapper(mouse_name
 
 
 def main(mouse_name="ReserveMouse3", classify_again=True, switch_sessions=True, contamination_ratio=0.1, confidence_ratio_threshold=1.5
-         , directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
+         , directory=os.path.join(get_dropbox_path(),"TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/")
          , cache_dir=os.path.join(os.path.dirname(get_dropbox_path().rstrip("/")), "C4 Cache")
          , dat_dir=os.path.join(get_dropbox_path(), "C4_conversion")
          , session_folder_pattern = ""

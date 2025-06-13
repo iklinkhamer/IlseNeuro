@@ -12,7 +12,7 @@ import stitch_CH_continuous_files_switch_sessions
 import inspectPredictedCellTypes
 import discharge_statistics
 import copyC4ResultsToAnalysisOutput
-from get_dropbox_path import get_dropbox_path
+from get_dropbox_path_2 import get_dropbox_path
 import time
 import os
 import sys
@@ -22,8 +22,8 @@ import shutil
 
 
 def main(mouse_name="Georgetown_Cbx"
-         , directory = os.path.join(os.path.dirname(os.path.dirname(get_dropbox_path())), "ContextMouseExperiments/Ilse/ephys")
-         , continuous_directory = os.path.join(os.path.dirname(os.path.dirname(get_dropbox_path())), "ContextMouseExperiments/Ilse/ephys")
+         , directory = os.path.join(get_dropbox_path(), "ContextMouseExperiments/Ilse/ephys")
+         , continuous_directory = os.path.join(get_dropbox_path(), "ContextMouseExperiments/Ilse/ephys")
          , source_folder_name = "kilosort"
          ):
     if mouse_name is None:
