@@ -56,22 +56,22 @@ def find_session_and_mouse_name(path):
     for parent in [path] + list(path.parents):
         name = parent.name
 
-        # Remove trailing session number if present
+        # Remove trailing session number if present (e.g., MouseA_20240612_01 → MouseA_20240612)
         base = name.rsplit('_', 1)[0] if name.rsplit('_', 1)[-1].isdigit() else name
 
-        # Extract digits only
+        # Extract digits only (e.g., MouseA20240612 → 20240612)
         digits = ''.join(c for c in base if c.isdigit())
 
-        # Try parsing with different datetime formats
+        # Try to match datetime patterns
         for fmt in ("%Y%m%d%H%M%S", "%Y%m%d%H%M", "%Y%m%d"):
             try:
                 datetime.strptime(digits, fmt)
-                mouse_name = parent.parent.name  # Get the parent folder name
+                mouse_name = parent.parent.name
                 return name, mouse_name
             except ValueError:
                 continue
 
-    return None, None  # No session-like folder found
+    return None, None
 
 
 
@@ -171,7 +171,7 @@ def countCellTypesSession(results_file=None, session=None):
     if not results_file:
         results_file = select_file_or_folder(
             "Select the cell type ",
-            start_path="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/ContextMouseExperiments/Ilse/ephys/"
+            start_path=os.path.join(get_dropbox_path(), "ContextMouseExperiments", "Ilse", "ephys")
         )       
                       
     print(f"Processing folder: {results_file}")  
@@ -181,7 +181,7 @@ def countCellTypesSession(results_file=None, session=None):
         c4_results = pd.read_csv(results_file, sep='\t')
         c4_results['NeuronId'] = f"{session}_N" + c4_results['cluster_id'].astype(str)
     else:
-        return
+        return None, None, None
     
     c4_counts = c4_results['predicted_cell_type'].value_counts()
     counts_df = c4_counts.reset_index()
@@ -197,14 +197,14 @@ def main(results_file_or_folder=None,contamination_ratio=0.1,
     if not results_file_or_folder and select_folder:
         results_file_or_folder = select_file_or_folder(
             "Select the cell type",
-            start_path="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/ContextMouseExperiments/Ilse/ephys/"
+            start_path=os.path.join(dropbox_path, "ContextMouseExperiments", "Ilse", "ephys")
         )  
     elif not results_file_or_folder:
-        results_file_or_folder = os.path.join(dropbox_path, "/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/ContextMouseExperiments/Ilse/ephys/")
+        results_file_or_folder = os.path.join(dropbox_path, "ContextMouseExperiments", "Ilse", "ephys")
         
 
     print(dropbox_path)    
-    counts_folder = os.path.join(dropbox_path, f"ContextMouseExperiments/Ilse/AnalysisOutput/Cell_type_counts/fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}/")
+    counts_folder = os.path.join(dropbox_path, "ContextMouseExperiments", "Ilse", "AnalysisOutput", "Cell_type_counts", f"fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}")
     os.makedirs(counts_folder, exist_ok=True)
     if os.path.isfile(results_file_or_folder):
         results_file = results_file_or_folder    
@@ -228,7 +228,7 @@ def main(results_file_or_folder=None,contamination_ratio=0.1,
                         if os.path.isdir(full_sub_path):
                             session_name, mouse_name = find_session_and_mouse_name(full_sub_path)
                             if session_name is not None and mouse_name is not None:                    
-                                subfolders.append(full_path)
+                                subfolders.append(full_sub_path)
                                 sessions.append(session_name)
                 else:                 
                     subfolders.append(full_path)
@@ -248,7 +248,7 @@ def main(results_file_or_folder=None,contamination_ratio=0.1,
             )
             results_file = os.path.join(c4_results_folder, "cluster_predicted_cell_type.tsv")
             
-            c4_results, cell_type_counts = countCellTypesSession(results_file, session)
+            c4_results, cell_type_counts, c4_counts = countCellTypesSession(results_file, session)
             
             cell_type_names = ['GoC', 'MFB', 'MLI', 'PkC_cs', 'PkC_ss']
         
@@ -262,10 +262,11 @@ def main(results_file_or_folder=None,contamination_ratio=0.1,
                     mouse_c4_df = pd.concat([mouse_c4_df, cell_type_counts], ignore_index=True)
                 
                 count_dict = {
-                    cell_type: (cell_type_counts['predicted_cell_type'] == cell_type).sum()
+                    cell_type: cell_type_counts.loc[cell_type_counts['cell_type'] == cell_type, 'count'].sum()
                     for cell_type in cell_type_names
                 }
-        
+                count_dict = {k: int(v) for k, v in count_dict.items()}
+
             count_dict['session'] = session
             session_counts.append(count_dict)
         
@@ -281,10 +282,18 @@ def main(results_file_or_folder=None,contamination_ratio=0.1,
         
         # Summarize counts per cell type
         cell_type_names = ['GoC', 'MFB', 'MLI', 'PkC_cs', 'PkC_ss']
-        count_dict = {cell_type: (cell_type_counts['predicted_cell_type'] == cell_type).sum()
-                      for cell_type in cell_type_names}
+        if cell_type_counts is None:
+            print(f"Warning: cell_type_counts is None for session {session}")
+            # Handle this case, e.g. skip, create empty dict, or continue
+            count_dict = {cell_type: 0 for cell_type in cell_type_names}
+        else:
+            count_dict = {
+                cell_type: cell_type_counts.loc[cell_type_counts['cell_type'] == cell_type, 'count'].sum()
+                for cell_type in cell_type_names
+            }
         count_dict['session'] = session
         session_counts.append(count_dict)
+
         
         # Convert counts to DataFrame
         summary_df = pd.DataFrame(session_counts)
@@ -298,12 +307,12 @@ def main(results_file_or_folder=None,contamination_ratio=0.1,
         
         total_counts_per_cell_type = {}
         total_counts_per_mouse = {}
-        cell_types = np.unique(mouse_df["predicted_cell_type"])
+        cell_types = np.unique(mouse_df["cell_type"])
         cell_counts_group = defaultdict()
         
         for cell_type in cell_types:
             # General count for this cell type
-            counts = (mouse_df["predicted_cell_type"] == cell_type).sum()
+            counts = (mouse_df["cell_type"] == cell_type).sum()
             # Initialize the cell_type if it doesn't exist
             if cell_type not in total_counts_per_cell_type:
                 total_counts_per_cell_type[cell_type] = 0
@@ -354,16 +363,16 @@ def main(results_file_or_folder=None,contamination_ratio=0.1,
     results_all_mice_df = pd.DataFrame(results_all_mice)
     results_all_mice_df = results_all_mice_df.set_index('Index')    
 
-    pie_chart_path = os.path.join(counts_folder, f"aaa_new_overall_pie_chart_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.png")
+    pie_chart_path = os.path.join(counts_folder, f"aaaa_new_overall_pie_chart_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.png")
         
     plot_pie_charts(results_all_mice_df, pie_chart_path)
         
-    pie_chart_path = os.path.join(counts_folder, f"aaa_new_overall_pie_chart_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.eps")
+    pie_chart_path = os.path.join(counts_folder, f"aaaa_new_overall_pie_chart_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.eps")
       
     plot_pie_charts(results_all_mice_df, pie_chart_path)
     
     # Save to file in counts_folder
-    output_file = os.path.join(counts_folder, f"aaa_new_overall_all_cell_type_totals_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.tsv")
+    output_file = os.path.join(counts_folder, f"aaaa_new_overall_all_cell_type_totals_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}.tsv")
     results_all_mice_df.to_csv(output_file, sep='\t')
     print(f"Saved cell type totals to {output_file}")
     
