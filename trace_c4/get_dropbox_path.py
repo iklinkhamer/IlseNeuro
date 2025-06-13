@@ -17,7 +17,9 @@ def get_dropbox_path():
     
     DROPBOX_ENV = {
         "sphinx": "/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/",
-        "hydra": "/home/devika/BayesLab Dropbox/Julius Koppen/TraceExperiments/"}
+        "hydra": "/home/devika/BayesLab Dropbox/Julius Koppen/TraceExperiments/",
+        "DESKTOP-BSHMJ1M":"/D:\BayesLab Dropbox\Ilse Klinkhamer\TraceExperiments"
+            }
     
     DROPBOX_PATH = DROPBOX_ENV[HOSTNAME]
     
