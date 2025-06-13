@@ -222,7 +222,15 @@ def main(results_file_or_folder=None,contamination_ratio=0.1,
             full_path = os.path.join(mouse_directory, f)
             if os.path.isdir(full_path):
                 session_name, mouse_name = find_session_and_mouse_name(full_path)
-                if session_name is not None and mouse_name is not None:                    
+                if not session_name or not mouse_name:
+                    for f_sub in os.listdir(full_path):
+                        full_sub_path = os.path.join(full_path, f_sub)
+                        if os.path.isdir(full_sub_path):
+                            session_name, mouse_name = find_session_and_mouse_name(full_sub_path)
+                            if session_name is not None and mouse_name is not None:                    
+                                subfolders.append(full_path)
+                                sessions.append(session_name)
+                else:                 
                     subfolders.append(full_path)
                     sessions.append(session_name)
         sessions.sort()
@@ -240,7 +248,7 @@ def main(results_file_or_folder=None,contamination_ratio=0.1,
             )
             results_file = os.path.join(c4_results_folder, "cluster_predicted_cell_type.tsv")
             
-            cell_type_counts = countCellTypesSession(results_file, session)
+            c4_results, cell_type_counts = countCellTypesSession(results_file, session)
             
             cell_type_names = ['GoC', 'MFB', 'MLI', 'PkC_cs', 'PkC_ss']
         
