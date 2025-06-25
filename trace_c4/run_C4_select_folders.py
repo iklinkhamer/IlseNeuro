@@ -70,7 +70,7 @@ def find_session_and_mouse_name(path):
 
     return None, None  # No session-like folder found
 
-def filter_units_by_confidence_ratio(phy_compatible_c4_folder, contamination_ratio=0.1, threshold_old=0, threshold_filter_new=1.5):
+def filter_units_by_confidence_ratio(phy_compatible_c4_folder, contamination_ratio=0.99, threshold_old=0, threshold_filter_new=1.5):
     base_results_folder = os.path.join(phy_compatible_c4_folder, f"c4_results_fpfnThreshold_{contamination_ratio}_confidenceRatio_{threshold_old}")
         #'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/ContextMouseExperiments/Ilse/ephys/Ilo_Cbx/I_Cbx_2025-02-25_10-33-00_7/c4/c4_results_fpfnThreshold_0.1_confidenceRatio_0'
     # Find the cluster confidence file in base_results_folder
@@ -136,6 +136,7 @@ def run_c4( phy_compatible_c4_folder
           , confidence_ratio_threshold=0
           , cache_dir = None
           , data_dir = None
+          , filter_spikes = False
           , phy_c4_folder = "c4"
           ):
 
@@ -173,7 +174,7 @@ def run_c4( phy_compatible_c4_folder
 
     run_cell_types_classifier(phy_compatible_c4_folder, quality='all', parallel=False, fp_threshold=contamination_ratio,
                               fn_threshold=contamination_ratio, threshold=confidence_ratio_threshold,
-                              save_path=save_path, cache_path=cache_path, dat_path=data_dir)
+                              save_path=save_path, cache_path=cache_path, dat_path=data_dir, filter_spikes=filter_spikes)
 
 
 def create_cluster_group_file(phy_compatible_c4_folder):
@@ -212,7 +213,7 @@ def create_cluster_group_file(phy_compatible_c4_folder):
 
 def main(phy_compatible_c4_folder=os.path.join(select_folder("Select the phy compatible c4 input folder")),
          classify_again=True,
-         contamination_ratio=0.1,
+         contamination_ratio=0.99,
          confidence_ratio_threshold_c4_run=0,
          confidence_ratio_threshold_results_filter=1.5):
     # Find all valid session subfolders
@@ -236,10 +237,10 @@ def main(phy_compatible_c4_folder=os.path.join(select_folder("Select the phy com
         if not os.path.exists(os.path.join(session_folder, "cluster_group.tsv")):
             create_cluster_group_file(session_folder)
 
-        try:
-            run_c4(session_folder, classify_again, contamination_ratio, confidence_ratio_threshold_c4_run, data_dir=session_folder)
-        except:
-            print("Crashed, likely due to: ValueError: No units were found with the provided parameter choices after quality checks.")
+        #try:
+        run_c4(session_folder, classify_again, contamination_ratio, confidence_ratio_threshold_c4_run, data_dir=session_folder, filter_spikes=False)
+        #except:
+        #    print("Crashed, likely due to: ValueError: No units were found with the provided parameter choices after quality checks.")
 
         filter_units_by_confidence_ratio(session_folder,
                                          contamination_ratio=contamination_ratio,
