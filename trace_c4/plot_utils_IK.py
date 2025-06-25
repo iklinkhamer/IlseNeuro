@@ -96,7 +96,7 @@ def lighten(sRgb, percentage=10):
 
 # Example usage
 lightened_color = lighten([128, 64, 32], 20)
-print(lightened_color)  # Output: [179 115  83]
+#print(lightened_color)  # Output: [179 115  83]
 
 def normalize_RGB_dict(color_dict):
     normalized_color_dict = {key: [v / 255 for v in value] for key, value in color_dict.items()}
