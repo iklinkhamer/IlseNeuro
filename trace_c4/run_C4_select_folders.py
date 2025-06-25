@@ -136,7 +136,7 @@ def run_c4( phy_compatible_c4_folder
           , confidence_ratio_threshold=0
           , cache_dir = None
           , data_dir = None
-          , filter_spikes = False
+          , filter_spikes = True
           , phy_c4_folder = "c4"
           ):
 
@@ -171,10 +171,12 @@ def run_c4( phy_compatible_c4_folder
         data_dir = os.path.join(data_dir, phy_c4_folder)
         if not os.path.exists(os.path.join(data_dir, "continuous")):
             print("continuous folder not found in data path folder, so please check.")
-
-    run_cell_types_classifier(phy_compatible_c4_folder, quality='all', parallel=False, fp_threshold=contamination_ratio,
+    try:
+        run_cell_types_classifier(phy_compatible_c4_folder, quality='all', parallel=False, fp_threshold=contamination_ratio,
                               fn_threshold=contamination_ratio, threshold=confidence_ratio_threshold,
                               save_path=save_path, cache_path=cache_path, dat_path=data_dir, filter_spikes=filter_spikes)
+    except:
+        return
 
 
 def create_cluster_group_file(phy_compatible_c4_folder):
@@ -211,12 +213,14 @@ def create_cluster_group_file(phy_compatible_c4_folder):
     print(f"cluster_group.tsv written to: {output_file}")
 
 
-def main(phy_compatible_c4_folder=os.path.join(select_folder("Select the phy compatible c4 input folder")),
+def main(phy_compatible_c4_folder="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/ContextMouseExperiments/Ilse/ephys/Ilo_Cbx", #os.path.join(select_folder("Select the phy compatible c4 input folder"))
          classify_again=True,
          contamination_ratio=0.99,
          confidence_ratio_threshold_c4_run=0,
-         confidence_ratio_threshold_results_filter=1.5):
+         confidence_ratio_threshold_results_filter=1.5,
+         filter_spikes=True):
     # Find all valid session subfolders
+    """
     subfolders = []
     for f in os.listdir(phy_compatible_c4_folder):
         full_path = os.path.join(phy_compatible_c4_folder, f)
@@ -227,6 +231,20 @@ def main(phy_compatible_c4_folder=os.path.join(select_folder("Select the phy com
                     full_path = os.path.join(full_path, "c4")
                 subfolders.append(full_path)
                 subfolders.sort()
+    """
+
+    subfolders = []
+
+    for f in os.listdir(phy_compatible_c4_folder):
+        first_level = os.path.join(phy_compatible_c4_folder, f)
+        if os.path.isdir(first_level):
+            for subf in os.listdir(first_level):
+                full_path = os.path.join(first_level, subf)
+                if "c4" not in full_path:
+                    full_path = os.path.join(full_path, "c4")
+                if os.path.isdir(full_path):
+                    subfolders.append(full_path)
+    subfolders.sort()
 
     if not subfolders:
         subfolders = phy_compatible_c4_folder
@@ -238,7 +256,7 @@ def main(phy_compatible_c4_folder=os.path.join(select_folder("Select the phy com
             create_cluster_group_file(session_folder)
 
         #try:
-        run_c4(session_folder, classify_again, contamination_ratio, confidence_ratio_threshold_c4_run, data_dir=session_folder, filter_spikes=False)
+        run_c4(session_folder, classify_again, contamination_ratio, confidence_ratio_threshold_c4_run, data_dir=session_folder, filter_spikes=filter_spikes)
         #except:
         #    print("Crashed, likely due to: ValueError: No units were found with the provided parameter choices after quality checks.")
 
