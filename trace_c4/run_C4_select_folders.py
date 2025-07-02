@@ -213,7 +213,7 @@ def create_cluster_group_file(phy_compatible_c4_folder):
     print(f"cluster_group.tsv written to: {output_file}")
 
 
-def main(phy_compatible_c4_folder="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/ContextMouseExperiments/Ilse/ephys/Ilo_Cbx", #os.path.join(select_folder("Select the phy compatible c4 input folder"))
+def main(phy_compatible_c4_folder="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/ContextMouseExperiments/Ilse/ephys/Kourou_Cbx", #os.path.join(select_folder("Select the phy compatible c4 input folder"))
          classify_again=True,
          contamination_ratio=0.99,
          confidence_ratio_threshold_c4_run=0,

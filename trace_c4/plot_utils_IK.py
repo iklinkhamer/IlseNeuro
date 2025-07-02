@@ -85,14 +85,23 @@ def lighten(sRgb, percentage=10):
     Lightens an sRGB color by a given percentage towards white.
     
     Parameters:
-    - sRgb: A list or tuple of 3 numerical values (RGB) in range [0, 255].
-    - percentage: Percentage to lighten (default is 10).
+    - sRgb: A list or tuple of 3 values in range [0, 255] or [0, 1].
+    - percentage: If <1, treated as alpha for blending. Otherwise, percentage (e.g. 10 means 10%).
     
     Returns:
-    - Lightened RGB color (0-255 range).
+    - Lightened RGB color in the same range as the input.
     """
-    gradientFn = mkGradientFn(sRgb, [255, 255, 255])
-    return gradientFn(percentage / 100).astype(int)
+    sRgb = np.array(sRgb, dtype=float)
+    is_255_scale = np.max(sRgb) > 1.0
+    white = np.array([255, 255, 255] if is_255_scale else [1.0, 1.0, 1.0])
+
+    # Convert percentage to alpha
+    alpha = 1-percentage if percentage < 1 else percentage / 100
+
+    gradientFn = mkGradientFn(sRgb, white)
+    lightened = gradientFn(alpha)
+
+    return lightened
 
 # Example usage
 lightened_color = lighten([128, 64, 32], 20)
