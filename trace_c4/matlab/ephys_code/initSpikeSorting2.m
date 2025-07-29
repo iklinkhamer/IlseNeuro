@@ -3,7 +3,7 @@ function initSpikeSorting2()
 
 disp("Calculating...")
 
-mousecodes = "Venice";
+mousecodes = "Limon";
 sessions = 1;
 
 for mcode = mousecodes
@@ -58,10 +58,11 @@ for mcode = mousecodes
         configFileName = "'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/Venice/Venice_20240523111730(copy)/Extraction2Bin/Config_h32_oe_2.prm'";
         configFileName = "'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/Venice/Venice_20240523115524 (copy)/Extraction2Bin/Config_h32_oe_2.prm'";
         configFileName = "'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/Venice/Venice_20240523111730(copy)/c4/continuous/Data_AP_LFP/Config_h32_oe_2.prm'";
+        configFileName = "'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/ContextMouseExperiments/EphysSessions/irc_limon_test/Config_h32_oe_2.prm'";
 
-        output_dir = "'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/Venice/Venice_20240523115524 (copy)/Extraction2Bin/irc'";
-        probe_file = "'/home/no1/Documents/code/IlseNeuro/trace_c4/matlab/ephys_code/DBC_3.1-64-H2_IK.prb'";
-        data_path = "'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/Venice/Venice_20240523115524 (copy)/Extraction2Bin/Data4KS2.bin'";
+        output_dir = "'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/ContextMouseExperiments/EphysSessions/ironclust_output/'";
+        probe_file = "'/home/no1/Documents/code/IlseNeuro/trace_c4/matlab/ephys_code/DBC_3.1-64-H2_IK_CSG.prb'";
+        data_path = "'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/ContextMouseExperiments/EphysSessions/L_Cbx_2025-07-28_12-02-32_3/Record Node 111/experiment1/recording1/continuous/Acquisition_Board-108.acquisition_board/continuous.dat'";
         if isfile(erase(configFileName, ".prm") + "_full.prm")
             str = "irc_IK_2025 manual " + configFileName;
         else
