@@ -58,7 +58,8 @@ for mcode = mousecodes
         configFileName = "'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/Venice/Venice_20240523111730(copy)/Extraction2Bin/Config_h32_oe_2.prm'";
         configFileName = "'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/Venice/Venice_20240523115524 (copy)/Extraction2Bin/Config_h32_oe_2.prm'";
         configFileName = "'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/Venice/Venice_20240523111730(copy)/c4/continuous/Data_AP_LFP/Config_h32_oe_2.prm'";
-        configFileName = "'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/ContextMouseExperiments/EphysSessions/irc_limon_test/Config_h32_oe_2.prm'";
+        % configFileName = "'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/ContextMouseExperiments/EphysSessions/irc_ocana_1/Config_h32_oe_2.prm'";
+        configFileName = "'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/ContextMouseExperiments/EphysSessions/irc_limon_test_2/Config_h32_oe_2.prm'";
 
         output_dir = "'/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/ContextMouseExperiments/EphysSessions/ironclust_output/'";
         probe_file = "'/home/no1/Documents/code/IlseNeuro/trace_c4/matlab/ephys_code/DBC_3.1-64-H2_IK_CSG.prb'";

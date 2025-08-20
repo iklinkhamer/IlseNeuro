@@ -66,15 +66,21 @@ def run_cell_types_classifier_wrapper(mouse_name
 
         #if sess_oebin != "Ana3_20190531193955":
         #   continue
-
         dp = path.join(dp_base, sess_oebin, phy_folder)
+        if not os.path.exists(dp):
+            dp_file2check = path.join(dp_base, sess_oebin, "spike_times.npy")
+            if os.path.isfile(dp_file2check):
+                dp = path.join(dp_base, sess_oebin)
+                
+        if not os.path.exists(dp):
+            print(f"Folder {dp} does not exist, skipping c4 analysis.")
+            continue  # Skip to the next iteration if the folder doesn't exist
+            
         cla_res_path = path.join(dp_base, sess_oebin, phy_folder, "cell_type_classification")
         save_path = os.path.join(dp, f"c4_results_fpfnThreshold_{contamination_ratio}_confidenceRatio_{confidence_ratio_threshold}")
         results_file_path = os.path.join(save_path, "cluster_predicted_cell_type.tsv")
 
-        if not os.path.exists(dp):
-            print(f"Folder {dp} does not exist, skipping c4 analysis.")
-            continue  # Skip to the next iteration if the folder doesn't exist
+
         if not os.path.exists(f"{dp}/params.py"):
             print(f"params.py folder not found in folder {sess_oebin}, skipping c4 analysis...")
             continue
@@ -87,10 +93,11 @@ def run_cell_types_classifier_wrapper(mouse_name
         os.makedirs(cache_path, exist_ok=True)
 
         dat_path = os.path.join(dat_dir, mouse_name, sess_oebin)
-        if not os.path.exists(os.path.join(dat_path, "continuous")):
+        
+        if not os.path.isfile(os.path.join(dat_path, "continuous", "Data_AP_LFP", "continuous.dat")):
             dat_path = os.path.join(dat_path, phy_folder)
-            if not os.path.exists(os.path.join(dat_path, "continuous")):
-                print("continuous folder not found in data path folder, so please check.")
+            if not os.path.isfile(os.path.join(dat_path, "continuous", "Data_AP_LFP", "continuous.dat")):
+                print("continuous.dat file not found in data path folder, please check.")
 
 
         run_cell_types_classifier(dp, quality = 'all', parallel = False, fp_threshold = contamination_ratio, fn_threshold = contamination_ratio, threshold = confidence_ratio_threshold, save_path = save_path, cache_path=cache_path, dat_path=dat_path)
@@ -101,7 +108,7 @@ def run_cell_types_classifier_wrapper(mouse_name
 
 def main(mouse_name="ReserveMouse3", classify_again=True, switch_sessions=True, contamination_ratio=0.1, confidence_ratio_threshold=1.5
          , directory=os.path.join(get_dropbox_path(),"TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/")
-         , cache_dir=os.path.join(os.path.dirname(get_dropbox_path().rstrip("/")), "C4 Cache")
+         , cache_dir=os.path.join(get_dropbox_path(), "C4 Cache")
          , dat_dir=os.path.join(get_dropbox_path(), "C4_conversion")
          , session_folder_pattern = ""
          ):
