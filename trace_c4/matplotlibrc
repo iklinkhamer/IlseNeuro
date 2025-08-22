@@ -1,0 +1,8 @@
+font.family: DejaVu Sans
+font.sans-serif: DejaVu Sans, Liberation Sans
+font.serif: DejaVu Serif, Times New Roman, Liberation Serif
+font.monospace: DejaVu Sans Mono, Liberation Mono
+axes.titlesize: large
+axes.labelsize: medium
+xtick.labelsize: small
+ytick.labelsize: small
