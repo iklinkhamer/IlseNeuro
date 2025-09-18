@@ -15,9 +15,9 @@ font_manager.fontManager.addfont(font_path) # Add the font to Matplotlib's font 
 """
 
 import sys
-import npyx
+#import npyx
 
-from get_dropbox_path_2 import get_dropbox_path
+from getBayesLabDropboxRoot import get_dropbox_path
 from npyx.c4.predict_cell_types import run_cell_types_classifier
 from os import path
 import os

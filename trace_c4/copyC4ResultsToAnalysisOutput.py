@@ -7,7 +7,7 @@ Created on Fri Feb 28 18:42:32 2025
 """
 import os
 import shutil  
-from get_dropbox_path import get_dropbox_path
+from getBayesLabDropboxRoot import get_dropbox_path
 
 
 def get_mice():
@@ -52,8 +52,8 @@ def get_mice():
 
 def main(   mouse_name=None
         ,  switch_sessions=True
-        ,  directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
-        ,  destination_folder="/home/no1/Lucas Bayones/BayesLab Dropbox/Lucas Bayones/TraceExperiments/AnalysisOutput/c4 results stats/"
+        ,  directory=os.path.join(get_dropbox_path(),"TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/")
+        ,  destination_folder=os.path.join(get_dropbox_path(), "TraceExperiments/AnalysisOutput/c4 results stats/")
         ):
     if mouse_name is None:
         mice = get_mice()

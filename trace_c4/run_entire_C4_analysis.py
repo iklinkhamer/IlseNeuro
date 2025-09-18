@@ -10,9 +10,9 @@ import OpenEphys_wrapper_IK
 import run_run_cell_types_classifier
 import stitch_CH_continuous_files_switch_sessions
 import inspectPredictedCellTypes
-import discharge_statistics
+import discharge_statistics2 as discharge_statistics
 import copyC4ResultsToAnalysisOutput
-from get_dropbox_path_2 import get_dropbox_path
+from getBayesLabDropboxRoot import get_dropbox_path
 import time
 import os
 import sys

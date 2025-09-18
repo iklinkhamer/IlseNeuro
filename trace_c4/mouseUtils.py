@@ -6,13 +6,13 @@ Created on Thu Mar 13 15:50:54 2025
 @author: Ilse Klinkhamer
 """
 import os
-from get_dropbox_path import get_dropbox_path
+from getBayesLabDropboxRoot import get_dropbox_path
 from collections import defaultdict
 import json
 
 def makeMouseMetaDataFile(
-    directory=os.path.join(get_dropbox_path(), "C4_conversion/ZZZ_FolderCopy_IK_LeaveAlone/"),
-    save_dir=os.path.join(get_dropbox_path(), "ExperimentOutput/Ephys4Trace1/"),
+    directory=os.path.join(get_dropbox_path(), "TraceExperiments/C4_conversion/ZZZ_FolderCopy_IK_LeaveAlone/"),
+    save_dir=os.path.join(get_dropbox_path(), "TraceExperiments/ExperimentOutput/Ephys4Trace1/"),
     include_switch_sessions=True
 ):
     mice = get_mice()
@@ -55,8 +55,8 @@ def makeMouseMetaDataFile(
     return all_mouse_folders
 
 def makeAllMouseFoldersFile(
-    directory=os.path.join(get_dropbox_path(), "C4_conversion/ZZZ_FolderCopy_IK_LeaveAlone/"),
-    save_dir=os.path.join(get_dropbox_path(), "ExperimentOutput/Ephys4Trace1/"),
+    directory=os.path.join(get_dropbox_path(), "TraceExperiments/C4_conversion/ZZZ_FolderCopy_IK_LeaveAlone/"),
+    save_dir=os.path.join(get_dropbox_path(), "TraceExperiments/ExperimentOutput/Ephys4Trace1/"),
     include_switch_sessions=True
 ):
     mice = get_mice()
@@ -87,14 +87,14 @@ def makeAllMouseFoldersFile(
 
     return all_mouse_folders
 
-def getAllMouseFolders(directory=os.path.join(get_dropbox_path(), "ExperimentOutput/Ephys4Trace1/")):
+def getAllMouseFolders(directory=os.path.join(get_dropbox_path(), "TraceExperiments/ExperimentOutput/Ephys4Trace1/")):
     file_path = os.path.join(directory, "allMouseSessions.json")
     if not os.path.exists(file_path):
         return {}
     with open(file_path, "r") as file:
         return json.load(file)
 
-def getMouseFolders(mouse_name, directory=os.path.join(get_dropbox_path(), "ExperimentOutput/Ephys4Trace1/")):
+def getMouseFolders(mouse_name, directory=os.path.join(get_dropbox_path(), "TraceExperiments/ExperimentOutput/Ephys4Trace1/")):
     all_mouse_folders = getAllMouseFolders(directory)
     return all_mouse_folders.get(mouse_name, [])
 

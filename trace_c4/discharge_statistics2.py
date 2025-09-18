@@ -15,7 +15,7 @@ from npyx.spk_t import trn, isi, inst_cv2, mean_firing_rate
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from get_dropbox_path import get_dropbox_path
+from getBayesLabDropboxRoot import get_dropbox_path
 from plot_utils_IK import c4_colors_rgb, lighten, normalize_RGB_dict
 from mouseUtils import getMouseFolders
 from scipy.stats import zscore
@@ -125,8 +125,8 @@ def get_discharge_statistics(mouse_name = "Iowa"
                              , switch_sessions=False
                              , contamination_ratio=0.1
                              , confidence_ratio_threshold=2
-                             , directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
-                             , save_directory=os.path.join(get_dropbox_path(), "AnalysisOutput/c4 results stats/")
+                             , directory=os.path.join(get_dropbox_path(),"TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/")
+                             , save_directory=os.path.join(get_dropbox_path(), "TraceExperiments/AnalysisOutput/c4 results stats/")
                              , again=False
                              , fig_output_types=[".png", ".eps"]
                              ):
@@ -306,8 +306,8 @@ def main(mouse_name=None
          , switch_sessions=True
          , contamination_ratio=0.1
          , confidence_ratio_threshold=1.5
-         , directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
-         , save_directory=os.path.join(get_dropbox_path(), "AnalysisOutput/c4 results stats/")
+         , directory=os.path.join(get_dropbox_path(),"TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/")
+         , save_directory=os.path.join(get_dropbox_path(), "TraceExperiments/AnalysisOutput/c4 results stats/")
          , again=True
          ):
     
