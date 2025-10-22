@@ -10,6 +10,9 @@ from pathlib import Path
 import inspect
 from getBayesLabDropboxRoot import get_dropbox_path
 
+CODE_ROOT = Path(get_dropbox_path(), "ContextMouseExperiments", "pythonpipeline")
+OEBIN = Path(CODE_ROOT, "OtherCon")
+
 DATA_ROOT = Path(get_dropbox_path(), "ContextMouseExperiments", "pythonpipeline", "data")
 
 ANALYSIS_OUTPUT = Path(DATA_ROOT, "AnalysisOutput")
@@ -32,6 +35,7 @@ CELL_COUNTS = Path(ANALYSIS_OUTPUT, "cell_type_counts")
 FIRING_RATES = Path(ANALYSIS_OUTPUT, "smoothed_firing_rates")
 PCA = Path(ANALYSIS_OUTPUT, "PCA")
 SCALING_INDEX = Path(ANALYSIS_OUTPUT, "scaling_index")
+SCALING_INDEX_FIGS = Path(ANALYSIS_OUTPUT, "scaling_index_figs")
 
 RASTERS = Path(ANALYSIS_OUTPUT, "PSTH_Rasters")
 
