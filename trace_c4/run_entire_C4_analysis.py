@@ -20,11 +20,13 @@ import re
 import numpy as np
 import shutil
 from pathlib import Path
+import CSG_Env
 
+CSG_MICE = ["Geneva_Cbx", "Georgetown_Cbx", "Georgetown_Ctx", "Helsinki_Cbx", "Ilo_Cbx", "Ilo_mPFC", "Kourou_Cbx", "Limon_Cbx", "Natal_Cbx", "Ocana_Cbx"]
 
 def main(mouse_name="Natal_Cbx"
-         , directory = os.path.join(get_dropbox_path(), "ContextMouseExperiments/Ilse/ephys")
-         , continuous_directory = os.path.join(get_dropbox_path(), "ContextMouseExperiments/Ilse/ephys")
+         , kilosort_output_directory = None #os.path.join(get_dropbox_path(), "ContextMouseExperiments/Ilse/ephys")
+         , continuous_data_directory = None #os.path.join(get_dropbox_path(), "ContextMouseExperiments/Ilse/ephys")
          , source_folder_name = "kilosort"
          ):
     if mouse_name is None:
@@ -33,17 +35,21 @@ def main(mouse_name="Natal_Cbx"
         else:
             print("Error: No mouse name provided")
             sys.exit(1)
+    if mouse_name in CSG_MICE: 
+        if not kilosort_output_directory:
+            kilosort_output_directory = CSG_Env.KILOSORT_OUTPUT
+        if not continuous_data_directory:
+            continuous_data_directory = CSG_Env.EPHYS
 
     #directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
     #folder_name = "SwitchSessionStitching/c4/c4_results_fpfnThreshold_0.1_confidenceRatio_1.5/"
-    continuous_data_path = find_path(mouse_name)
+    #continuous_data_mouse_directory = find_path(mouse_name, continuous_data_dir=continuous_data_directory)
     switch_sessions = True
     classify_again = True
-    OpenEphys_wrapper_IK.main(mouse_name, switch_sessions=switch_sessions, directory=directory,
-                              source_folder_name=source_folder_name)
+    #OpenEphys_wrapper_IK.main(mouse_name, switch_sessions=switch_sessions, directory=kilosort_output_directory)
     run_run_cell_types_classifier.main(mouse_name, classify_again=classify_again, switch_sessions=switch_sessions,
-                                       contamination_ratio=0.1, confidence_ratio_threshold=1.5, directory=directory,
-                                       dat_dir=continuous_directory, session_folder_pattern=mouse_name[0])
+                                       contamination_ratio=0.1, confidence_ratio_threshold=1.5, directory=kilosort_output_directory,
+                                       dat_dir=continuous_data_directory, session_folder_pattern=mouse_name[0])
 
     try:
         print("Converting openephys output to continuous output")
@@ -67,11 +73,12 @@ def main(mouse_name="Natal_Cbx"
     except:
         ik_var = 1
         
-def find_path(mouse_name=None):
+def find_path(mouse_name, continuous_data_dir=None):
     #participants_to_exclude = ["Geneva", "Helsinki", "Georgetown", "Ilo", "Ilo_Cbx", "Ilo_mPFC", "Kourou", "Kourou_Cbx", "Limon", "Ocana", "testopto", "test_limon"]
-    ephys_path = Path(__file__).parent.parent.parent / 'data' / 'ephys'
-    continuous_path = ephys_path / 'continuous_data'
-    kilosort_path = ephys_path / 'kilosort_output'
+    if not continuous_data_dir:
+        continuous_data_dir = CSG_Env.EPHYS #Path(__file__).parent.parent.parent / 'data' / 'ephys'
+    continuous_path = continuous_data_dir / 'continuous_data'
+    kilosort_path = continuous_data_dir / 'kilosort_output'
 
     for participant_folder in continuous_path.iterdir():
         if str(participant_folder.name) is not mouse_name:

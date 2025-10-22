@@ -150,7 +150,7 @@ def convertOpenEphysDataToContinuous(   mouse_name
             
 def main(   mouse_name="Dallas"
          ,  switch_sessions=True
-         ,  directory=os.path.join(get_dropbox_path(),"ExperimentOutput/Ephys4Trace1/MainFolder/")
+         ,  directory=os.path.join(get_dropbox_path(),"TraceExperiments/ExperimentOutput/Ephys4Trace1/MainFolder/")
          ,  data_folder = "Data"
          ,  source_folder_name = "Extraction2Bin"
          ,  session_folder_pattern = ""
