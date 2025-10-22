@@ -25,7 +25,7 @@ import CSG_Env
 from pathlib import Path
 
 def run_cell_types_classifier_wrapper(mouse_name
-                                      ,classify_again=True
+                                      ,classify_again=False
                                       ,switch_sessions=False
                                       ,contamination_ratio=0.1
                                       ,confidence_ratio_threshold=2
@@ -96,20 +96,28 @@ def run_cell_types_classifier_wrapper(mouse_name
 
         continuous_data_path = os.path.join(continuous_data_dir, mouse_name, sess_oebin)
         
-        continuous_data_folders = [
-            folder for folder in os.listdir(continuous_data_path)
-            if os.path.isfile(os.path.join(continuous_data_path, folder, CSG_Env.EXPERIMENT1, "continuous.dat"))]
+        if os.path.isfile(os.path.join(continuous_data_path, "continous.dat")):
+            dat_dir = continuous_data_path    
+        elif os.path.isfile(os.path.join(continuous_data_path,"c4", "continuous", "Data_AP_LFP", "continuous.dat")):
+            dat_dir = os.path.join(Path(continuous_data_path), Path(sess_oebin),"c4", "continuous", "Data_AP_LFP", "continous.dat")       
+        else:
+            continuous_data_folders = [
+                folder for folder in os.listdir(continuous_data_path)
+                if os.path.isfile(os.path.join(continuous_data_path, folder, CSG_Env.EXPERIMENT1, "continuous.dat"))]
+            if not len(continuous_data_folders) == 0:
+                dat_dir = os.path.join(continuous_data_path, continuous_data_folders[0], CSG_Env.EXPERIMENT1)
+            else:
+                print("continuous.dat file not found in data path folder, please check. skipping...")
+                continue
+
+                        
         
-        dat_dir = os.path.join(continuous_data_path, continuous_data_folders[0], CSG_Env.EXPERIMENT1)
         
         #if not os.path.isfile(os.path.join(continuous_data_path, "continuous", "Data_AP_LFP", "continuous.dat")):
         #    continuous_data_path = os.path.join(continuous_data_path, phy_folder)
         #    if not os.path.isfile(os.path.join(continuous_data_path, "continuous", "Data_AP_LFP", "continuous.dat")):
-        if len(continuous_data_folders) == 0:
-            print("continuous.dat file not found in data path folder, please check. skipping...")
-            continue
 
-        #oebin_file_path_continous_recording = os.path.join(continuous_data_dir, mouse_name, sess_oebin, continuous_data_folders[0], "experiment1", "recording1")
+            #oebin_file_path_continous_recording = os.path.join(continuous_data_dir, mouse_name, sess_oebin, continuous_data_folders[0], "experiment1", "recording1")
         oebin_path = CSG_Env.OEBIN #dp if os.path.isfile(os.path.join(dp, "structure.oebin")) else oebin_file_path_continous_recording if os.path.isfile(os.path.join(oebin_file_path_continous_recording, "structure.oebin")) else None
         
         if not oebin_path:

@@ -45,7 +45,7 @@ def main(mouse_name="Ocana_Cbx"
     #folder_name = "SwitchSessionStitching/c4/c4_results_fpfnThreshold_0.1_confidenceRatio_1.5/"
     #continuous_data_mouse_directory = find_path(mouse_name, continuous_data_dir=continuous_data_directory)
     switch_sessions = True
-    classify_again = True
+    classify_again = False
     #OpenEphys_wrapper_IK.main(mouse_name, switch_sessions=switch_sessions, directory=kilosort_output_directory)
     run_run_cell_types_classifier.main(mouse_name, classify_again=classify_again, switch_sessions=switch_sessions,
                                        contamination_ratio=0.1, confidence_ratio_threshold=1.5, directory=kilosort_output_directory,
